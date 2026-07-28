@@ -1,0 +1,297 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    /* Fixed Watermark Background Image */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 550px;
+        height: 550px;
+        background-image: url("{% static 'images/cc.png' %}");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    :root {
+        --primary-navy: #1a365d;
+        --primary-gold: #c19a4c;
+        --primary-light: #2d5a87;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --card-bg: #ffffff;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-dark);
+        position: relative;
+    }
+
+    .request-analysis-container {
+        position: relative;
+        z-index: 1;
+        padding: 1rem 0;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+    }
+
+    /* Stats Container - Naka-align sa Left */
+    .stats-grid {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 12px 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        text-align: left;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid var(--border-color);
+        max-width: 280px;
+        width: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .stat-card .stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .stat-card.total .stat-value { 
+        color: var(--primary-navy); 
+    }
+
+    /* Chart Card (Lapad para sa dako nga chart) */
+    .chart-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        overflow: hidden;
+        max-width: 720px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
+    }
+
+    .chart-header {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+        padding: 14px 20px;
+    }
+
+    .chart-header h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chart-body {
+        padding: 24px;
+    }
+
+    /* Wrapper Layout */
+    .chart-wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        align-items: center;
+    }
+
+    /* Canvas styling: Gi-padako ang height ngadto sa 420px */
+    .canvas-container {
+        position: relative;
+        height: 420px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #documentChart {
+        max-height: 420px !important;
+    }
+
+    /* Legend: Pina-vertical list paubos */
+    .chart-legend {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 18px;
+    }
+
+    .chart-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .chart-legend-item:last-child {
+        border-bottom: none;
+    }
+
+    .chart-legend-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+
+    .chart-legend-text {
+        font-size: 13px;
+        color: var(--text-dark);
+        font-weight: 500;
+        line-height: 1.3;
+    }
+</style>
+
+<div class="request-analysis-container">
+    <div class="page-title">Request Analysis</div>
+    <div class="page-subtitle">Analyze document request trends and statistics</div>
+
+    <!-- Stats Grid (Naka-align sa Left) -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-label">Total Requests</div>
+            <div class="stat-value">{{ total_requests }}</div>
+        </div>
+    </div>
+
+    <!-- Chart Card -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>
+                <i class="fa-solid fa-chart-pie"></i>
+                Most Requested Documents
+            </h2>
+        </div>
+        <div class="chart-body">
+            <div class="chart-wrapper">
+                <!-- Mas Dako nga Circle/Chart Container (420px) -->
+                <div class="canvas-container">
+                    <canvas id="documentChart"></canvas>
+                </div>
+                <!-- Text / Legend sa Ubos (Pina-vertical list) -->
+                <ul id="documentLegend" class="chart-legend"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const labels = {{ labels|safe }};
+    const data = {{ data|safe }};
+    const total = data.reduce((a,b) => a + b, 0);
+
+    // Update labels: full name + count + percentage
+    const updatedLabels = labels.map((label, index) => {
+        const count = data[index];
+        const percent = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+        return `${label} (${count}) - ${percent}%`;
+    });
+
+    const ctx = document.getElementById('documentChart');
+
+    const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: updatedLabels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    "#1a365d", "#c19a4c", "#2d5a87", "#3b82f6",
+                    "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
+                    "#ec4899", "#06b6d4", "#f97316", "#64748b"
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.dataset.data[context.dataIndex];
+                            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${labels[context.dataIndex]}: ${value} requests (${percent}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Generate custom legend sa ubos
+    const legendContainer = document.getElementById('documentLegend');
+    chart.data.labels.forEach((label, index) => {
+        const li = document.createElement('li');
+        li.className = 'chart-legend-item';
+        li.innerHTML = `
+            <span class="chart-legend-color" style="background-color:${chart.data.datasets[0].backgroundColor[index]};"></span>
+            <span class="chart-legend-text">${label}</span>
+        `;
+        legendContainer.appendChild(li);
+    });
+
+});
+</script>
+
+{% endblock %}

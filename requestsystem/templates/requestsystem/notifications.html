@@ -1,0 +1,184 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notification-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .notification-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    margin-right: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  .doc-icon { background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); }
+  .approved-icon { background: linear-gradient(135deg, #10b981, #059669); }
+  .released-icon { background: linear-gradient(135deg, #64748b, #475569); }
+  .processing-icon { background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); }
+  .ready-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .pending-icon { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e293b; }
+  .rejected-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+  .notification-text {
+    flex: 1;
+    font-size: 15px;
+    color: #475569;
+  }
+
+  .notification-text strong {
+    color: var(--text-dark);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .notification-time {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 8px;
+  }
+
+  .status-message {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+  .status-message.approved { background-color: #d1fae5; color: #065f46; }
+  .status-message.processing { background-color: #dbeafe; color: #1e40af; }
+  .status-message.ready { background-color: #fed7aa; color: #92400e; }
+  .status-message.released { background-color: #e2e8f0; color: #475569; }
+  .status-message.pending { background-color: #fef3c7; color: #92400e; }
+  .status-message.rejected { background-color: #fee2e2; color: #991b1b; }
+
+  .badge-status {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+    font-weight: 700;
+  }
+
+  .badge-status.pending { background: #fbbf24; color: #1e293b; }
+  .badge-status.approved { background: #10b981; color: white; }
+  .badge-status.processing { background: var(--primary-navy); color: white; }
+  .badge-status.ready { background: #f59e0b; color: white; }
+  .badge-status.released { background: #64748b; color: white; }
+  .badge-status.rejected { background: #ef4444; color: white; }
+</style>
+
+<div class="container">
+  <div class="page-title">
+    <i class="fa-solid fa-bell"></i> Notifications
+  </div>
+
+  <div class="notification-box">
+    {% if requests %}
+      {% for request in requests %}
+        <div class="notification-item">
+          <div class="notification-icon 
+              {% if request.status == 'APPROVED' %}approved-icon
+              {% elif request.status == 'PROCESSING' %}processing-icon
+              {% elif request.status == 'READY' %}ready-icon
+              {% elif request.status == 'RELEASED' %}released-icon
+              {% elif request.status == 'PENDING' %}pending-icon
+              {% elif request.status == 'REJECTED' %}rejected-icon
+              {% else %}doc-icon{% endif %}">
+            {% if request.status == 'APPROVED' %}<i class="fa-solid fa-check"></i>
+            {% elif request.status == 'PROCESSING' %}<i class="fa-solid fa-gear"></i>
+            {% elif request.status == 'READY' %}<i class="fa-solid fa-box-seam"></i>
+            {% elif request.status == 'RELEASED' %}<i class="fa-solid fa-box-open"></i>
+            {% elif request.status == 'PENDING' %}<i class="fa-solid fa-hourglass-half"></i>
+            {% elif request.status == 'REJECTED' %}<i class="fa-solid fa-xmark"></i>
+            {% else %}<i class="fa-solid fa-file"></i>{% endif %}
+          </div>
+
+          <div class="notification-text">
+            <strong>{{ request.get_document_type_display }}</strong>
+            <span class="badge-status {{ request.status|lower }}">
+              {{ request.status|title }}
+            </span>
+            <br>
+
+            {% if request.status == "APPROVED" %}
+              <div class="status-message approved">
+                The request has been accepted.
+              </div>
+            {% elif request.status == "PROCESSING" %}
+              <div class="status-message processing">
+                Staff are preparing the document.
+              </div>
+            {% elif request.status == "READY" %}
+              <div class="status-message ready">
+                Your document is ready for collection! Please head to the Registrar Office.
+              </div>
+            {% elif request.status == "RELEASED" %}
+              <div class="status-message released">
+                The student has received the document.
+              </div>
+            {% elif request.status == "PENDING" %}
+              <div class="status-message pending">
+                Your document request is pending.
+              </div>
+            {% elif request.status == "REJECTED" %}
+              <div class="status-message rejected">
+                The request was denied.
+              </div>
+            {% endif %}
+
+            <div class="notification-time">
+              {{ request.date_requested|date:"M d, Y h:i A" }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="notification-item">
+        <div class="notification-text" style="text-align:center; padding:20px;">
+          No document notifications yet.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

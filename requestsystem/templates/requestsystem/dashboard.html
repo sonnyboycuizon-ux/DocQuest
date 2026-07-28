@@ -1,0 +1,528 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("{% static 'images/conso.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 30px;
+  }
+
+  .welcome-card {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    border-radius: 16px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(26, 54, 93, 0.25);
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .welcome-text h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+
+  .welcome-text p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .request-btn {
+    background: white;
+    color: var(--primary-navy);
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .request-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
+  /* --- STATS SECTION (COMPACT & MODERN STYLE) --- */
+  .stats-section {
+    margin-bottom: 30px;
+  }
+
+  .main-stat-card {
+    background: white;
+    padding: 16px 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+    max-width: 280px;
+    margin-bottom: 16px;
+    border: 1.5px solid #e2e8f0;
+    user-select: none;
+  }
+
+  .main-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-color: var(--primary-navy, #1a365d);
+  }
+
+  .main-stat-title {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .main-stat-value {
+    color: var(--primary-navy, #1a365d);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .toggle-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #475569;
+    margin-top: 10px;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+  }
+
+  .main-stat-card:hover .toggle-text {
+    background: var(--primary-navy, #1a365d);
+    color: white;
+  }
+
+  .toggle-text i {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .main-stat-card.active .toggle-text i {
+    transform: rotate(180deg);
+  }
+
+  .sub-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sub-stats.show {
+    max-height: 600px;
+    opacity: 1;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 14px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+    text-align: center;
+    border-top: 3px solid #e2e8f0;
+  }
+
+  .stat-card.pending-card { border-top-color: #f59e0b; }
+  .stat-card.approved-card { border-top-color: #10b981; }
+  .stat-card.processing-card { border-top-color: #3b82f6; }
+  .stat-card.ready-card { border-top-color: #14b8a6; }
+  .stat-card.released-card { border-top-color: #6366f1; }
+  .stat-card.rejected-card { border-top-color: #ef4444; }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .stat-title {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .table-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    padding: 25px;
+  }
+
+  .table-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+  }
+
+  .table-responsive {
+    border-radius: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    white-space: nowrap;
+  }
+
+  th {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:hover {
+    background: #f8fafc;
+  }
+
+  .status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .status-pending { background: #fef3c7; color: #92400e; }
+  .status-approved { background: #d1fae5; color: #065f46; }
+  .status-processing { background: #dbeafe; color: #1e40af; }
+  .status-ready { background: #ccfbf1; color: #0f766e; }
+  .status-released { background: #e0e7ff; color: #3730a3; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+
+  .clickable-purpose {
+    color: var(--primary-navy);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .clickable-purpose:hover {
+    color: var(--primary-gold);
+    text-decoration: underline;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    font-size: 15px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+
+  .modal-content h3 {
+    margin: 0 0 15px;
+    color: var(--text-dark);
+    font-weight: 700;
+  }
+
+  .modal-content p {
+    margin-bottom: 20px;
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  .close-modal-btn {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .close-modal-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.25);
+  }
+</style>
+
+<div class="container">
+  <h1 class="page-title">Dashboard</h1>
+  <p class="page-subtitle">Welcome back, manage your document requests here</p>
+
+  <div class="welcome-card">
+    <div class="welcome-text">
+      <h2>Hi, {{ user.first_name }} 
+        {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' %}{{ user.profile.get_middle_initial_display }}{% endif %}
+        {{ user.last_name }}!
+      </h2>
+      <p>Need a document? Make a request now</p>
+      {% if not user.profile.email_verified %}
+        <p style="margin-top: 10px; font-size: 13px; opacity: 0.95;">
+          <i class="fas fa-exclamation-triangle me-1"></i>
+          Please verify your email first to request documents!
+        </p>
+      {% endif %}
+    </div>
+    <a href="{% url 'request_document' %}" class="request-btn request-document-link" data-email-verified="{{ user.profile.email_verified|yesno:'true,false' }}">
+      {% if user.profile.email_verified %}
+        <i class="fas fa-file-circle-plus me-2"></i> Request Document
+      {% else %}
+        <i class="fas fa-file-circle-plus me-2"></i> Request Document
+      {% endif %}
+    </a>
+  </div>
+
+  <div class="stats-section">
+    <div class="main-stat-card" id="totalRequestsCard">
+      <div class="main-stat-title">Total Requests</div>
+      <div class="main-stat-value">{{ requests|length }}</div>
+      <div class="toggle-text" id="toggleText">
+        <span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+
+    <div class="sub-stats" id="subStatsContainer">
+      <div class="stat-card pending-card">
+        <div class="stat-title">Pending</div>
+        <div class="stat-value">{{ pending_count }}</div>
+      </div>
+      <div class="stat-card approved-card">
+        <div class="stat-title">Approved</div>
+        <div class="stat-value">{{ approved_count }}</div>
+      </div>
+      <div class="stat-card processing-card">
+        <div class="stat-title">Processing</div>
+        <div class="stat-value">{{ processing_count }}</div>
+      </div>
+      <div class="stat-card ready-card">
+        <div class="stat-title">Ready</div>
+        <div class="stat-value">{{ ready_count }}</div>
+      </div>
+      <div class="stat-card released-card">
+        <div class="stat-title">Released</div>
+        <div class="stat-value">{{ released_count }}</div>
+      </div>
+      <div class="stat-card rejected-card">
+        <div class="stat-title">Rejected</div>
+        <div class="stat-value">{{ rejected_count }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3><i class="fas fa-file-alt me-2"></i> Your Document Requests</h3>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Document</th>
+            <th>Purpose</th>
+            <th>Status</th>
+            <th>Date Requested</th>
+            <th>Status Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requests %}
+          <tr>
+            <td>{{ req.get_document_type_display }}</td>
+            <td>
+              <span class="clickable-purpose" data-purpose="{{ req.purpose }}">
+                {{ req.purpose|truncatechars:40 }}
+              </span>
+            </td>
+            <td>
+              {% if req.status == 'PENDING' %}
+                <span class="status-badge status-pending">Pending</span>
+              {% elif req.status == 'APPROVED' %}
+                <span class="status-badge status-approved">Approved</span>
+              {% elif req.status == 'PROCESSING' %}
+                <span class="status-badge status-processing">Processing</span>
+              {% elif req.status == 'READY' %}
+                <span class="status-badge status-ready">Ready</span>
+              {% elif req.status == 'REJECTED' %}
+                <span class="status-badge status-rejected">Rejected</span>
+              {% elif req.status == 'RELEASED' %}
+                <span class="status-badge status-released">Released</span>
+              {% endif %}
+            </td>
+            <td>{{ req.date_requested|date:"M d, Y H:i" }}</td>
+            <td>
+              {% if req.status == 'APPROVED' and req.date_approved %}
+                {{ req.date_approved|date:"M d, Y H:i" }}
+              {% elif req.status == 'PROCESSING' and req.date_processing %}
+                {{ req.date_processing|date:"M d, Y H:i" }}
+              {% elif req.status == 'READY' and req.date_ready %}
+                {{ req.date_ready|date:"M d, Y H:i" }}
+              {% elif req.status == 'RELEASED' and req.date_released %}
+                {{ req.date_released|date:"M d, Y H:i" }}
+              {% elif req.status == 'REJECTED' and req.date_rejected %}
+                {{ req.date_rejected|date:"M d, Y H:i" }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="empty-state">
+              <i class="fas fa-inbox fa-2x mb-2 opacity-50"></i><br>
+              No document requests yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Purpose Modal -->
+<div class="modal-overlay" id="purposeModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-info-circle me-2"></i> Request Purpose</h3>
+    <p id="modalPurposeText"></p>
+    <button class="close-modal-btn" id="closePurposeModal">Close</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Breakdown Toggle
+  const totalRequestsCard = document.getElementById('totalRequestsCard');
+  const subStatsContainer = document.getElementById('subStatsContainer');
+  const toggleText = document.getElementById('toggleText');
+
+  if (totalRequestsCard) {
+    totalRequestsCard.addEventListener('click', function() {
+      const isShown = subStatsContainer.classList.toggle('show');
+      totalRequestsCard.classList.toggle('active', isShown);
+
+      if (isShown) {
+        toggleText.innerHTML = '<span>Hide Breakdown</span> <i class="fas fa-chevron-up"></i>';
+      } else {
+        toggleText.innerHTML = '<span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>';
+      }
+    });
+  }
+
+  // Purpose Modal
+  const purposeModal = document.getElementById('purposeModal');
+  const modalPurposeText = document.getElementById('modalPurposeText');
+  const closePurposeModal = document.getElementById('closePurposeModal');
+  const purposeLinks = document.querySelectorAll('.clickable-purpose');
+
+  purposeLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      const fullPurpose = this.getAttribute('data-purpose');
+      modalPurposeText.textContent = fullPurpose;
+      purposeModal.style.display = 'flex';
+    });
+  });
+
+  if (closePurposeModal) {
+    closePurposeModal.addEventListener('click', function() {
+      purposeModal.style.display = 'none';
+    });
+  }
+
+  if (purposeModal) {
+    purposeModal.addEventListener('click', function(e) {
+      if (e.target === purposeModal) {
+        purposeModal.style.display = 'none';
+      }
+    });
+  }
+
+
+});
+</script>
+{% endblock %}

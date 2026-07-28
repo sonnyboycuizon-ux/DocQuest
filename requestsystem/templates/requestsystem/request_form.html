@@ -1,0 +1,445 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 30px;
+  }
+
+  .request-box {
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .form-group {
+    margin-bottom: 22px;
+    position: relative;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-size: 14px;
+  }
+
+  .form-group select,
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--primary-navy);
+    box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+    outline: none;
+    background: white;
+  }
+
+  .price-tag {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.25);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.35);
+  }
+
+  .back-link {
+    margin-top: 25px;
+    text-align: center;
+  }
+
+  .back-link a {
+    color: var(--primary-navy);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-size: 14px;
+  }
+
+  .back-link a:hover {
+    color: var(--primary-gold);
+    text-decoration: underline;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-content {
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    animation: slideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-content h2 {
+    margin: 0 0 20px;
+    color: var(--text-dark);
+    font-weight: 700;
+  }
+
+  .alert-box {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: left;
+    margin-bottom: 25px;
+  }
+
+  .alert-box h4 {
+    margin: 0 0 10px 0;
+    color: #92400e;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .alert-box p, .alert-box ul {
+    font-size: 13px;
+    color: #475569;
+    margin: 6px 0;
+  }
+
+  .alert-box ul {
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+
+  .payment-card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .payment-card:hover {
+    background: white;
+    border-color: var(--primary-navy);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 54, 93, 0.15);
+  }
+
+  .payment-card img {
+    height: 40px;
+    width: auto;
+    margin-right: 15px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .payment-card span {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+</style>
+
+<div class="container">
+  <h1 class="page-title">📄 Request a Document</h1>
+  <p class="page-subtitle">Fill in the details below. The registrar will review your request.</p>
+
+  <div class="request-box">
+    {% if is_irregular %}
+    <div class="alert alert-warning mb-4">
+        <i class="fas fa-exclamation-triangle"></i> Irregular students are not allowed to request Transcript of Records (TOR).
+    </div>
+    {% endif %}
+    <form method="POST" id="requestForm" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_document_type">Document Type</label>
+            {{ form.document_type }}
+            <span class="price-tag" id="documentPrice">₱0.00</span>
+        </div>
+
+      <div class="form-group" id="tor_type_container" style="display:none;">
+        <label for="id_tor_type">TOR Type</label>
+        {{ form.tor_type }}
+      </div>
+
+      <div class="form-group" id="course_container" style="display:none;">
+        <label for="id_course">Course</label>
+        <select id="id_course" name="course">
+          <option value="">-- Select Course --</option>
+          <option value="BSIT">BSIT</option>
+          <option value="BSHM">BSHM</option>
+          <option value="BSED">BSED</option>
+          <option value="BEED">BEED</option>
+          <option value="BSENTREP">BSENTREP</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="quantity_container" style="display:none;">
+        <label for="id_quantity">Quantity</label>
+        <input type="number" id="id_quantity" name="quantity" min="1" value="1">
+      </div>
+
+      <div class="form-group">
+        <label for="id_purpose">Purpose</label>
+        {{ form.purpose }}
+      </div>
+
+      <input type="hidden" name="selected_bank" id="selected_bank" value="">
+      <button type="button" class="submit-btn" id="submitBtn">Submit Request</button>
+    </form>
+
+    <div class="back-link">
+      <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div id="paymentModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Payment Method</h2>
+
+    <div class="alert-box">
+      <h4>📢 Reminder</h4>
+      <p>If the student will personally pay and claim the document, please bring your valid School ID or any valid Government ID.</p>
+      <p>If the document will be claimed by an authorized representative, they must bring:</p>
+      <ul>
+        <li>Authorization Letter signed by the student</li>
+        <li>Photocopy of the student's valid ID (Front and Back)</li>
+        <li>Valid ID of the representative</li>
+      </ul>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="payment-card pay-registrar">
+        <img src="{% static 'images/cctc.jpg' %}" alt="CCTC Logo">
+        <span>Proceed to Treasurer Office</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const isIrregular = {{ is_irregular|yesno:"true,false" }};
+  const requestForm = document.getElementById('requestForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const modal = document.getElementById('paymentModal');
+  const selectedBankInput = document.getElementById('selected_bank');
+  const payRegistrarBtns = modal.querySelectorAll('.pay-registrar');
+  const docSelect = document.getElementById('id_document_type');
+
+  // Disable TOR option for irregular students
+  if (isIrregular && docSelect) {
+    const torOption = Array.from(docSelect.options).find(option => option.value === 'TRANSCRIPT');
+    if (torOption) {
+      torOption.disabled = true;
+      torOption.textContent += ' (Not available for irregular students)';
+    }
+  }
+
+  const torContainer = document.getElementById('tor_type_container');
+  const torSelect = document.getElementById('id_tor_type');
+  const courseContainer = document.getElementById('course_container');
+  const courseSelect = document.getElementById('id_course');
+  const quantityContainer = document.getElementById('quantity_container');
+  const quantityInput = document.getElementById('id_quantity');
+  const priceTag = document.getElementById('documentPrice');
+
+  function updatePrice() {
+    if(!docSelect) return;
+    const doc = docSelect.value;
+    let priceText = "";
+    
+    // RESET Submit Button every time naay i-change
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Request";
+    submitBtn.style.opacity = "1";
+    submitBtn.style.cursor = "pointer";
+
+    if (doc === 'FORM137') {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'block';
+      quantityContainer.style.display = 'none';
+      priceText = "₱100.00";
+    } else if (doc === 'TRANSCRIPT') {
+      torContainer.style.display = 'block';
+      courseContainer.style.display = 'block';
+      quantityContainer.style.display = 'none';
+      const torType = torSelect.value;
+      const course = courseSelect.value;
+
+      if (torType === 'REGULAR') {
+        if (['BSIT','BSHM','BSENTREP'].includes(course)) priceText = "₱200.00";
+        else if (['BSED','BEED'].includes(course)) priceText = "₱300.00";
+        else priceText = "₱0.00";
+      } else if (torType === 'IRREGULAR') {
+        priceText = "Go to Registrar";
+        // I-DISABLE ANG BUTTON KUNG IRREGULAR ANG TOR TYPE
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Not Available Online (Go to Registrar)";
+        submitBtn.style.opacity = "0.5";
+        submitBtn.style.cursor = "not-allowed";
+      }
+    } else if (doc === 'CERTIFIED TRUE COPY') {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'none';
+      quantityContainer.style.display = 'block';
+      const quantity = parseInt(quantityInput.value) || 1;
+      priceText = `₱${(15 * quantity).toFixed(2)} (${quantity} each)`;
+    } else {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'none';
+      quantityContainer.style.display = 'none';
+      if (doc === 'DIPLOMA') priceText = "₱250.00";
+      else if (doc === 'CERTIFICATE OF ENROLLMENT') priceText = "₱50.00";
+      else if (doc === 'CERTIFICATE WITH GRADES') priceText = "₱50.00";
+      else if (doc === 'MEDIUM OF INSTRUCTION') priceText = "₱50.00";
+      else if (doc === 'CARD') priceText = "₱80.00";
+      else priceText = "₱0.00";
+    }
+
+    priceTag.innerText = priceText;
+  }
+
+  function toggleFields() {
+    if(!docSelect) return;
+    if (docSelect.value === 'TRANSCRIPT') {
+      torContainer.style.display = 'block';
+      courseContainer.style.display = 'block';
+      quantityContainer.style.display = 'none';
+    } else if (docSelect.value === 'FORM137') {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'block';
+      quantityContainer.style.display = 'none';
+    } else if (docSelect.value === 'CERTIFIED TRUE COPY') {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'none';
+      quantityContainer.style.display = 'block';
+    } else {
+      torContainer.style.display = 'none';
+      courseContainer.style.display = 'none';
+      quantityContainer.style.display = 'none';
+    }
+    updatePrice();
+  }
+
+  if(docSelect) docSelect.addEventListener('change', toggleFields);
+  if(torSelect) torSelect.addEventListener('change', updatePrice);
+  if(courseSelect) courseSelect.addEventListener('change', updatePrice);
+  if(quantityInput) quantityInput.addEventListener('input', updatePrice);
+
+  toggleFields();
+
+  // --- Show Modal ---
+  submitBtn.addEventListener('click', function(e) {
+    // Pugngan ang modal nga mo-gawas kung gi-disable ang button
+    if (submitBtn.disabled) {
+        e.preventDefault();
+        return;
+    }
+    modal.classList.add('show');
+  });
+
+  // --- Confirm Accounting Choice ---
+  payRegistrarBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      selectedBankInput.value = "Pay at Accounting Office";
+      modal.classList.remove('show');
+      requestForm.submit();
+    });
+  });
+
+  // Close when window dimming area clicked
+  modal.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+});
+</script>
+{% endblock %}

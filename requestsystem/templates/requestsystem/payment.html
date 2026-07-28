@@ -1,0 +1,234 @@
+{% extends 'requestsystem/base.html' %}
+{% block content %}
+<style>
+    :root {
+        --primary-navy: #1a365d;
+        --primary-gold: #c19a4c;
+        --primary-light: #2d5a87;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --card-bg: #ffffff;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+    }
+
+    .payment-card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .payment-header {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+        padding: 32px 24px;
+        text-align: center;
+    }
+
+    .payment-header i {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    .payment-header h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+    }
+
+    .payment-header p {
+        font-size: 14px;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .payment-body {
+        padding: 32px 24px;
+    }
+
+    .bank-info {
+        background: var(--bg-light);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .bank-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--border-color);
+    }
+
+    .bank-info-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .bank-info-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bank-info-value {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .bank-info-value.amount {
+        font-size: 24px;
+        color: var(--primary-navy);
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .file-upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: 12px;
+        padding: 32px 16px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: var(--bg-light);
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary-navy);
+        background: rgba(26, 54, 93, 0.05);
+    }
+
+    .file-upload-area i {
+        font-size: 40px;
+        color: var(--primary-navy);
+        margin-bottom: 12px;
+    }
+
+    .file-upload-area p {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .file-upload-area input[type="file"] {
+        display: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        width: 100%;
+        margin-top: 24px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26, 54, 93, 0.3);
+    }
+
+    .file-name {
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--primary-navy);
+        font-weight: 600;
+    }
+</style>
+
+<div class="page-title">PNB Payment</div>
+<div class="page-subtitle">Complete your payment by uploading the payment receipt.</div>
+
+<div class="payment-card">
+    <div class="payment-header">
+        <i class="fa-solid fa-credit-card"></i>
+        <h2>Payment Details</h2>
+        <p>Please use the following bank details for your payment</p>
+    </div>
+    <div class="payment-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="bank-info">
+                <div class="bank-info-row">
+                    <span class="bank-info-label">Bank</span>
+                    <span class="bank-info-value">Philippine National Bank</span>
+                </div>
+                <div class="bank-info-row">
+                    <span class="bank-info-label">Account Name</span>
+                    <span class="bank-info-value">DocQuest Registrar</span>
+                </div>
+                <div class="bank-info-row">
+                    <span class="bank-info-label">Account Number</span>
+                    <span class="bank-info-value">1234-5678-90</span>
+                </div>
+                <div class="bank-info-row">
+                    <span class="bank-info-label">Amount</span>
+                    <span class="bank-info-value amount">₱100</span>
+                </div>
+            </div>
+
+            <label class="form-label">Upload PNB Payment Receipt</label>
+            <div class="file-upload-area" onclick="document.getElementById('receipt-input').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Click to upload or drag and drop</p>
+                <p style="font-size: 12px; margin-top: 4px;">PNG, JPG, PDF up to 5MB</p>
+                <input type="file" id="receipt-input" name="receipt" accept=".png,.jpg,.jpeg,.pdf" required onchange="updateFileName(this)">
+            </div>
+            <div id="file-name-display" class="file-name"></div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fa-solid fa-paper-plane"></i>
+                Submit Payment
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function updateFileName(input) {
+    const display = document.getElementById('file-name-display');
+    if (input.files && input.files.length > 0) {
+        display.innerHTML = '<i class="fa-solid fa-check-circle" style="color: #10b981; margin-right: 6px;"></i> ' + input.files[0].name;
+    } else {
+        display.innerHTML = '';
+    }
+}
+</script>
+{% endblock %}

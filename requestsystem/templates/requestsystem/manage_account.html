@@ -1,0 +1,940 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Fixed Watermark Background Image */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 550px;
+        height: 550px;
+        background-image: url("{% static 'images/cc.png' %}");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.12;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    :root {
+        --primary-navy: #1a365d;
+        --primary-gold: #c19a4c;
+        --primary-light: #2d5a87;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --card-bg: #ffffff;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-dark);
+        position: relative;
+    }
+
+    .manage-accounts-container {
+        padding: 2rem 1.5rem;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-dark);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Page Title */
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+    }
+
+    /* Counter Summary Cards */
+    .stats-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 14px 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .stats-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .stats-number {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-dark);
+        line-height: 1.2;
+    }
+
+    .stats-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    /* Filter Card */
+    .filter-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .form-select, .form-control {
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--primary-navy);
+        box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+        outline: none;
+        background: white;
+    }
+
+    /* Table Card */
+    .table-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    thead {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+    }
+
+    th {
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-dark);
+        font-size: 14px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background-color: var(--bg-light);
+    }
+
+    /* Interactive User Profile Link */
+    .user-profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        text-decoration: none;
+        color: inherit;
+        border-radius: 12px;
+        padding: 6px 10px;
+        margin: -6px -10px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .user-profile-cell:hover {
+        background-color: rgba(26, 54, 93, 0.08);
+    }
+
+    .user-profile-cell:hover .user-name-text {
+        color: var(--primary-navy);
+        text-decoration: underline;
+    }
+
+    .avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);
+        flex-shrink: 0;
+    }
+
+    .meta-subtext {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge-active { 
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0); 
+        color: #065f46; 
+    }
+    .badge-admin { 
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+        color: #1e40af; 
+    }
+    .badge-suspended { 
+        background: linear-gradient(135deg, #fee2e2, #fecaca); 
+        color: #991b1b; 
+    }
+
+    /* Buttons */
+    .btn-primary-add {
+        background: linear-gradient(135deg, var(--primary-gold), #d4a95e);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(193, 154, 76, 0.3);
+    }
+
+    /* Action Buttons Wrapper */
+    .action-group {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    /* Action Icon Buttons Exact Sizing */
+    .btn-action-edit, .btn-action-delete {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 10px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+
+    .btn-action-edit {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        color: white;
+    }
+
+    .btn-action-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+        color: white;
+    }
+
+    .btn-action-delete {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: white;
+    }
+
+    .btn-action-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+
+    /* Pagination Styling */
+    .pagination-container {
+        padding: 14px 20px;
+        background: var(--card-bg);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid var(--border-color);
+        background: white;
+        color: var(--text-dark);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: var(--primary-navy);
+        color: white;
+        border-color: var(--primary-navy);
+    }
+
+    .page-btn.active {
+        background: var(--primary-navy);
+        color: white;
+        border-color: var(--primary-navy);
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Compact & Mobile-Optimized Profile View Modal */
+    .modal-dialog-compact {
+        max-width: 420px;
+        margin: 1.25rem auto;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+
+    .modal-profile-header {
+        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+        padding: 1.75rem 1rem 1.25rem 1rem;
+        color: white;
+        text-align: center;
+        position: relative;
+    }
+
+    .modal-profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #ffffff;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-gold), #d4a95e);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 auto;
+        border: 3px solid #ffffff;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .detail-card {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .detail-card-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: rgba(26, 54, 93, 0.08);
+        color: var(--primary-navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    /* Custom Mobile Improvements */
+    @media (max-width: 576px) {
+        .manage-accounts-container {
+            padding: 1rem 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.25rem;
+        }
+
+        .stats-card {
+            padding: 10px 14px;
+            gap: 10px;
+        }
+
+        .stats-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 15px;
+        }
+
+        .stats-number {
+            font-size: 16px;
+        }
+
+        .stats-label {
+            font-size: 10px;
+        }
+
+        .filter-card {
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .modal-dialog-compact {
+            margin: 0.75rem;
+            max-width: calc(100% - 1.5rem);
+        }
+
+        .modal-profile-header {
+            padding: 1.5rem 1rem 1rem 1rem;
+        }
+
+        .modal-profile-img, .modal-avatar-placeholder {
+            width: 85px;
+            height: 85px;
+            font-size: 1.8rem;
+        }
+
+        .detail-card {
+            padding: 8px 12px;
+        }
+
+        .detail-card-icon {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="manage-accounts-container">
+    
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+            <div class="page-title">Account Registry Management</div>
+            <div class="page-subtitle">Review institutional records, configure profile definitions, and track active parameters.</div>
+        </div>
+        <a href="{% url 'add_admin' %}" class="btn-primary-add">
+            <i class="fa-solid fa-user-tie"></i> Add Admin
+        </a>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: rgba(26, 54, 93, 0.1); color: var(--primary-navy);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <div id="totalAccountsCount" class="stats-number">0</div>
+                    <div class="stats-label">Total Accounts</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: rgba(6, 95, 70, 0.1); color: #065f46;">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div>
+                    <div id="totalStudentsCount" class="stats-number">0</div>
+                    <div class="stats-label">Students</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: rgba(30, 64, 175, 0.1); color: #1e40af;">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <div id="totalAdminsCount" class="stats-number">0</div>
+                    <div class="stats-label">Admins</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label for="statusFilter" class="form-label">Filter by Status</label>
+                <select id="statusFilter" class="form-select">
+                    <option value="all">All Records</option>
+                    <option value="current student">Current Students</option>
+                    <option value="graduated">Graduated</option>
+                    <option value="admin">Admin Accounts</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="searchInput" class="form-label">Search</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or Student ID...">
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table id="registryTable">
+                <thead>
+                    <tr>
+                        <th style="width: 160px;">Student/Admin ID</th>
+                        <th>User Profile</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>System Access</th>
+                        <th style="width: 120px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    {% for user in users %}
+                    <tr id="user-row-{{ user.id }}" 
+                        data-status="{% if user.is_staff or user.is_superuser %}admin{% else %}{{ user.profile.get_student_status_display|lower }}{% endif %}"
+                        data-type="{% if user.is_staff or user.is_superuser %}admin{% else %}student{% endif %}">
+                        <td style="color: var(--text-dark); font-weight: 600; letter-spacing: 0.02em;">
+                            {% if user.is_superuser %}
+                                <span style="color: var(--primary-gold);">SUPER ADMIN</span>
+                            {% elif user.is_staff %}
+                                <span style="color: var(--primary-light);">STAFF ADMIN</span>
+                            {% elif user.profile.student_id %}
+                                {{ user.profile.student_id }}
+                            {% else %}
+                                <span style="color: var(--text-muted); font-weight: 400;">—</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            <!-- Clickable Profile Link -->
+                            <a href="#" class="user-profile-cell student-info-trigger"
+                               data-id="{% if user.profile.student_id %}{{ user.profile.student_id }}{% else %}N/A{% endif %}"
+                               data-name="{{ user.first_name }} {% if user.profile.middle_initial %}{{ user.profile.middle_initial }}. {% endif %}{{ user.last_name }}"
+                               data-email="{{ user.email }}"
+                               data-phone="{% if user.profile.phone_number %}{{ user.profile.phone_number }}{% else %}None Saved{% endif %}"
+                               data-role="{% if user.is_superuser %}Super Administrator{% elif user.is_staff %}Staff Administrator{% else %}{{ user.profile.get_student_status_display }}{% endif %}"
+                               data-picture="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% endif %}"
+                               data-initials="{{ user.username|slice:':2' }}"
+                               data-status="{% if not user.is_active %}Suspended{% elif user.is_superuser %}Super Admin{% elif user.is_staff %}Staff Admin{% else %}Current Student{% endif %}">
+                                
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ user.username|slice:":2" }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <span class="user-name-text" style="font-weight: 700; display: block; color: var(--text-dark);">
+                                        {{ user.first_name|cut:" N."|cut:" N" }}
+                                        {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' and user.profile.middle_initial != 'None' %}
+                                            {{ user.profile.middle_initial }}.
+                                        {% endif %}
+                                        {{ user.last_name }}
+                                    </span>
+                                    <span class="meta-subtext">
+                                        {% if user.is_superuser %}Super Administrator
+                                        {% elif user.is_staff %}Staff Administrator
+                                        {% else %}{{ user.profile.get_student_status_display }}{% endif %}
+                                    </span>
+                                </div>
+                            </a>
+                        </td>
+                        
+                        <td style="color: var(--text-muted);">{{ user.email }}</td>
+                        
+                        <td style="color: var(--text-dark);">
+                            {% if user.profile.phone_number %}{{ user.profile.phone_number }}{% else %}<span style="color: var(--text-muted); font-size: 0.8rem;">None Saved</span>{% endif %}
+                        </td>
+                        
+                        <td>
+                            {% if not user.is_active %}
+                                <span id="status-badge-{{ user.id }}" class="badge badge-suspended">Suspended</span>
+                            {% else %}
+                                <span id="status-badge-{{ user.id }}" class="badge {% if user.is_staff or user.is_superuser %}badge-admin{% else %}badge-active{% endif %}">
+                                    {% if user.is_superuser %}Super Admin{% elif user.is_staff %}Staff Admin{% else %}Current Student{% endif %}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td style="text-align: center;">
+                            <div class="action-group">
+                                <a href="{% url 'edit_user' user.id %}" class="btn-action-edit" title="Edit User">
+                                    <i class="fas fa-pencil"></i>
+                                </a>
+                                <form method="POST" action="{% url 'delete_user' user.id %}" style="display:inline; margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn-action-delete"
+                                            title="Delete User"
+                                            onclick="return confirm('Are you sure you want to delete this account?')">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="noDataRow">
+                        <td colspan="6" style="text-align: center; padding: 3rem 0; color: var(--text-muted);">
+                            <i class="fas fa-inbox mb-3" style="font-size: 40px; opacity: 0.5;"></i>
+                            <br>No active account configurations match this filter context.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls Section -->
+        <div class="pagination-container">
+            <div id="paginationInfo" class="pagination-info">Showing 0 of 0 entries</div>
+            <div id="paginationControls" class="pagination-controls"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Compact Student Profile View Modal -->
+<div class="modal fade" id="studentInfoModal" tabindex="-1" aria-labelledby="studentInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-compact">
+        <div class="modal-content">
+            
+            <div class="modal-profile-header">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="mb-2" id="modalAvatarContainer">
+                    <!-- Dynamic Picture/Initials -->
+                </div>
+                <h4 id="modalName" class="fw-bold mb-1 fs-5"></h4>
+                <span id="modalRole" class="badge badge-admin mt-1" style="font-size: 11px;"></span>
+            </div>
+
+            <div class="modal-body p-3">
+                <div class="detail-card">
+                    <div class="detail-card-icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="text-truncate">
+                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Student / User ID</small>
+                        <span id="modalID" class="fw-bold text-dark fs-6"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="text-truncate">
+                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Email Address</small>
+                        <span id="modalEmail" class="fw-semibold text-dark small"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-card-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="text-truncate">
+                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Contact Number</small>
+                        <span id="modalPhone" class="fw-semibold text-dark small"></span>
+                    </div>
+                </div>
+
+                <div class="detail-card mb-0">
+                    <div class="detail-card-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="text-truncate">
+                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Account Status</small>
+                        <span id="modalStatus" class="fw-semibold text-dark small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0 justify-content-center p-2">
+                <button type="button" class="btn btn-sm btn-secondary px-4 fw-semibold" style="border-radius: 10px;" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const rows = document.querySelectorAll('#userTableBody tr:not(#noDataRow)');
+        
+        // Pagination Variables
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let filteredRows = [];
+
+        // Calculate and update top counter totals
+        function updateCounters() {
+            let totalAccounts = 0;
+            let totalStudents = 0;
+            let totalAdmins = 0;
+
+            rows.forEach(row => {
+                const type = row.getAttribute('data-type');
+                totalAccounts++;
+
+                if (type === 'admin') {
+                    totalAdmins++;
+                } else {
+                    totalStudents++;
+                }
+            });
+
+            document.getElementById('totalAccountsCount').textContent = totalAccounts;
+            document.getElementById('totalStudentsCount').textContent = totalStudents;
+            document.getElementById('totalAdminsCount').textContent = totalAdmins;
+        }
+
+        // Initialize counters on load
+        updateCounters();
+
+        // Render Pagination Controls & Display Specific Page Rows
+        function renderPagination() {
+            const totalRows = filteredRows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+
+            // Guard check for page bounds
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            // Hide all rows first
+            rows.forEach(row => row.style.display = 'none');
+
+            // Show rows for current page
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            filteredRows.slice(startIndex, endIndex).forEach(row => {
+                row.style.display = '';
+            });
+
+            // Update No Data Row display
+            const noDataRow = document.getElementById('noDataRow');
+            if (noDataRow) {
+                noDataRow.style.display = totalRows === 0 ? '' : 'none';
+            }
+
+            // Update Pagination Info Text
+            const paginationInfo = document.getElementById('paginationInfo');
+            if (totalRows === 0) {
+                paginationInfo.textContent = 'Showing 0 of 0 entries';
+            } else {
+                const currentStart = startIndex + 1;
+                const currentEnd = Math.min(endIndex, totalRows);
+                paginationInfo.textContent = `Showing ${currentStart} to ${currentEnd} of ${totalRows} entries`;
+            }
+
+            // Build Pagination Buttons
+            const controlsContainer = document.getElementById('paginationControls');
+            controlsContainer.innerHTML = '';
+
+            if (totalRows <= rowsPerPage) return; // Don't show buttons if 10 or fewer items
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPagination();
+                }
+            });
+            controlsContainer.appendChild(prevBtn);
+
+            // Page Number Buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderPagination();
+                });
+                controlsContainer.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPagination();
+                }
+            });
+            controlsContainer.appendChild(nextBtn);
+        }
+
+        // Filter Functionality
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value;
+
+            filteredRows = Array.from(rows).filter(row => {
+                const textContent = row.textContent.toLowerCase();
+                const rowStatus = row.getAttribute('data-status') || '';
+
+                const matchesSearch = textContent.includes(searchTerm);
+                const matchesStatus = (statusValue === 'all') || (rowStatus === statusValue);
+
+                return matchesSearch && matchesStatus;
+            });
+
+            currentPage = 1; // Reset to page 1 on search or filter change
+            renderPagination();
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+
+        // Initial Filter and Pagination Setup
+        filterTable();
+
+        // Clickable Expanded Student Info Modal Logic
+        const infoTriggers = document.querySelectorAll('.student-info-trigger');
+        const studentModalElement = document.getElementById('studentInfoModal');
+        const studentModal = new bootstrap.Modal(studentModalElement);
+
+        infoTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const email = this.getAttribute('data-email');
+                const phone = this.getAttribute('data-phone');
+                const role = this.getAttribute('data-role');
+                const picture = this.getAttribute('data-picture');
+                const initials = this.getAttribute('data-initials');
+                const status = this.getAttribute('data-status');
+
+                // Populate Modal Data
+                document.getElementById('modalID').textContent = id;
+                document.getElementById('modalName').textContent = name;
+                document.getElementById('modalEmail').textContent = email;
+                document.getElementById('modalPhone').textContent = phone;
+                document.getElementById('modalRole').textContent = role;
+                document.getElementById('modalStatus').textContent = status;
+
+                const avatarContainer = document.getElementById('modalAvatarContainer');
+                if (picture) {
+                    avatarContainer.innerHTML = `<img src="${picture}" alt="Profile Picture" class="modal-profile-img">`;
+                } else {
+                    avatarContainer.innerHTML = `<div class="modal-avatar-placeholder">${initials}</div>`;
+                }
+
+                studentModal.show();
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .home-logo {
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+  }
+
+  .home-logo img {
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .home-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+  }
+
+  .home-subtitle {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 36px;
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  .home-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .home-btn {
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .home-btn-primary {
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+  }
+
+  .home-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.3);
+  }
+
+  .home-btn-secondary {
+    background: white;
+    color: var(--primary-navy);
+    border: 2px solid #e2e8f0;
+  }
+
+  .home-btn-secondary:hover {
+    border-color: var(--primary-navy);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
+  }
+</style>
+
+<div class="home-container">
+  <div class="home-logo">
+    <img src="{% static 'images/cc.png' %}" alt="School Logo">
+  </div>
+  <h1 class="home-title">Welcome to DocQuest</h1>
+  <p class="home-subtitle">Your school's official document request system. Request, track, and receive your documents with ease.</p>
+  <div class="home-buttons">
+    <a href="{% url 'login' %}" class="home-btn home-btn-primary">Login</a>
+    <a href="{% url 'register' %}" class="home-btn home-btn-secondary">Register</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,771 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 550px;
+    height: 550px;
+    background-image: url("{% static 'images/cc.png' %}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-header-container {
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 0;
+  }
+
+  /* --- STATS SECTION --- */
+  .stats-section {
+    margin-bottom: 24px;
+  }
+
+  .main-stat-card {
+    background: white;
+    padding: 16px 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+    max-width: 280px;
+    margin-bottom: 16px;
+    border: 1.5px solid #e2e8f0;
+    user-select: none;
+  }
+
+  .main-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-color: var(--primary-navy, #1a365d);
+  }
+
+  .main-stat-title {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .main-stat-value {
+    color: var(--primary-navy, #1a365d);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .toggle-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #475569;
+    margin-top: 10px;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+  }
+
+  .main-stat-card:hover .toggle-text {
+    background: var(--primary-navy, #1a365d);
+    color: white;
+  }
+
+  .toggle-text i {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .main-stat-card.active .toggle-text i {
+    transform: rotate(180deg);
+  }
+
+  .sub-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sub-stats.show {
+    max-height: 600px;
+    opacity: 1;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 14px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+    text-align: center;
+    border-top: 3px solid #e2e8f0;
+  }
+
+  .stat-card.pending-card { border-top-color: #f59e0b; }
+  .stat-card.approved-card { border-top-color: #10b981; }
+  .stat-card.processing-card { border-top-color: #3b82f6; }
+  .stat-card.ready-card { border-top-color: #14b8a6; }
+  .stat-card.released-card { border-top-color: #6366f1; }
+  .stat-card.rejected-card { border-top-color: #ef4444; }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .stat-title {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  /* --- FILTER & TABLE STYLES --- */
+  .filter-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+
+  .form-select, .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+  }
+
+  .form-select:focus, .form-control:focus {
+    border-color: var(--primary-navy);
+    box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+    outline: none;
+    background: white;
+  }
+
+  .table-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  .table-responsive {
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+  }
+
+  th {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .course-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .course-badge[data-course="BSIT"] { background-color: #dbeafe; color: #1e40af; }
+  .course-badge[data-course="BSHM"] { background-color: #fef3c7; color: #92400e; }
+  .course-badge[data-course="BSED"], .course-badge[data-course="BEED"] { background-color: #d1fae5; color: #065f46; }
+  .course-badge[data-course="BSENTREP"] { background-color: #fee2e2; color: #991b1b; }
+
+  .status-pill {
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .status-pending { background: #fef3c7; color: #92400e; }
+  .status-approved { background: #d1fae5; color: #065f46; }
+  .status-processing { background: #dbeafe; color: #1e40af; }
+  .status-ready { background: #fed7aa; color: #92400e; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+  .status-released { background: #e2e8f0; color: #475569; }
+
+  .btn-outline-secondary {
+    border-color: #e2e8f0;
+    color: #475569;
+    border-radius: 10px;
+    padding: 6px 16px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .btn-outline-secondary:hover {
+    border-color: var(--primary-navy);
+    background: var(--primary-navy);
+    color: white;
+  }
+
+  .dropdown-menu {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  .dropdown-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .dropdown-item:hover {
+    background: #f8fafc;
+  }
+
+  .purpose-link {
+    cursor: pointer;
+    color: var(--primary-navy);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .purpose-link:hover {
+    color: var(--primary-gold);
+    text-decoration: underline;
+  }
+
+  .pagination .page-link {
+    border: none;
+    color: #475569;
+    font-weight: 600;
+    border-radius: 10px;
+    margin: 0 4px;
+  }
+
+  .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal-title {
+    font-weight: 700;
+  }
+
+  .modal-footer {
+    background: #f8fafc;
+    border-radius: 0 0 20px 20px;
+  }
+</style>
+
+<div class="container" style="position: relative; z-index: 1;">
+  <div class="page-header-container">
+    <div class="page-title">Admin Dashboard</div>
+    <div class="page-subtitle">Manage, review, and track student document requests.</div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="main-stat-card" id="totalRequestsCard">
+      <div class="main-stat-title">Total Requests</div>
+      <div class="main-stat-value">{{ total_requests }}</div>
+      <div class="toggle-text" id="toggleText">
+        <span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+
+    <div class="sub-stats" id="subStatsContainer">
+      <div class="stat-card pending-card">
+        <div class="stat-title">Pending</div>
+        <div class="stat-value">{{ pending_requests }}</div>
+      </div>
+      <div class="stat-card approved-card">
+        <div class="stat-title">Approved</div>
+        <div class="stat-value">{{ approved_requests }}</div>
+      </div>
+      <div class="stat-card processing-card">
+        <div class="stat-title">Processing</div>
+        <div class="stat-value">{{ processing_requests|default:0 }}</div>
+      </div>
+      <div class="stat-card ready-card">
+        <div class="stat-title">Ready</div>
+        <div class="stat-value">{{ ready_requests }}</div>
+      </div>
+      <div class="stat-card released-card">
+        <div class="stat-title">Released</div>
+        <div class="stat-value">{{ released_requests }}</div>
+      </div>
+      <div class="stat-card rejected-card">
+        <div class="stat-title">Rejected</div>
+        <div class="stat-value">{{ rejected_requests }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="filterStatus" class="form-label">Status</label>
+        <select id="filterStatus" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="READY">Ready for Pickup</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="RELEASED">Released</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="filterPayment" class="form-label">Payment</label>
+        <select id="filterPayment" class="form-select">
+          <option value="Registrar">Pay at Treasurer Office</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="filterCourse" class="form-label">Course</label>
+        <select id="filterCourse" class="form-select">
+          <option value="">All Courses</option>
+          {% for course in courses %}
+          <option value="{{ course }}">{{ course }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="searchInput" class="form-label">Search</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Search user, document...">
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table id="adminTable">
+        <thead>
+          <tr>
+            <th class="ps-4">ID</th>
+            <th>Student Name</th>
+            <th>Document Details</th>
+            <th>Purpose</th>
+            <th>Payment Status</th>
+            <th>Status</th>
+            <th>Requested</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requests %}
+          <tr data-status="{{ req.status }}"
+              data-payment="{% if req.payment_receipt %}Bank{% elif req.payment_status == 'Pending' %}Registrar{% else %}No Payment{% endif %}"
+              data-course="{{ req.course }}">
+            <td class="ps-4 text-muted fw-medium">#{{ req.id }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-semibold text-dark">
+                  {{ req.user.first_name }}
+                  {% if req.user.profile.middle_initial and req.user.profile.middle_initial != 'N/A' %}{{ req.user.profile.get_middle_initial_display }}{% endif %}
+                  {{ req.user.last_name }}
+                </span>
+                <button type="button" class="btn btn-sm btn-link text-primary p-0 shadow-none border-0 ms-1"
+                        data-bs-toggle="modal" data-bs-target="#userModal{{ req.id }}" title="View Student Profile">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+            <td class="fw-medium text-dark">{{ req.get_document_type_display }}</td>
+            <td>
+              <span class="text-primary small text-truncate d-inline-block purpose-link"
+                    style="max-width: 140px;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#purposeModal{{ req.id }}"
+                    title="Click to view full purpose">
+                {{ req.purpose }}
+              </span>
+            </td>
+            <td>
+              {% if req.payment_receipt %}
+                <div class="d-flex flex-column align-items-start gap-1">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded px-2 py-1 small">Paid via Bank</span>
+                  <a href="{{ req.payment_receipt.url }}" target="_blank" class="text-decoration-none btn-link small fw-medium">
+                    <i class="fas fa-file-pdf"></i> View Receipt
+                  </a>
+                </div>
+              {% elif req.payment_status == 'Pending' %}
+                <span class="badge bg-secondary text-white rounded px-2 py-1 small">
+                  Pay at Treasurer Office
+                </span>
+              {% else %}
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded px-2 py-1 small">No Payment</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if req.status == 'PENDING' %}
+                <span class="status-pill status-pending">Pending</span>
+              {% elif req.status == 'APPROVED' %}
+                <span class="status-pill status-approved">Approved</span>
+              {% elif req.status == 'PROCESSING' %}
+                <span class="status-pill status-processing">Processing</span>
+              {% elif req.status == 'READY' %}
+                <span class="status-pill status-ready">Ready</span>
+              {% elif req.status == 'REJECTED' %}
+                <span class="status-pill status-rejected">Rejected</span>
+              {% elif req.status == 'RELEASED' %}
+                <span class="status-pill status-released">Released</span>
+              {% endif %}
+            </td>
+            <td class="text-muted small">{{ req.date_requested|date:"M d, Y" }}<br><span style="font-size: 0.75rem;">{{ req.date_requested|date:"H:i" }}</span></td>
+            <td class="text-end pe-4">
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Manage
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="approve" class="btn btn-link p-0 text-decoration-none text-success w-100 text-start"><i class="fas fa-check-circle me-2"></i>Approve Request</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="processing" class="btn btn-link p-0 text-decoration-none text-primary w-100 text-start"><i class="fas fa-gear me-2"></i>Mark as Processing</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="ready" class="btn btn-link p-0 text-decoration-none text-warning w-100 text-start"><i class="fas fa-box-seam me-2"></i>Ready for Pickup</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="release" class="btn btn-link p-0 text-decoration-none text-info w-100 text-start"><i class="fas fa-file-check me-2"></i>Mark as Released</button>
+                    </form>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="reject" class="btn btn-link p-0 text-decoration-none text-danger w-100 text-start"><i class="fas fa-x-circle me-2"></i>Reject Request</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="POST" class="dropdown-item py-2">
+                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
+                      <button type="submit" name="action" value="cancel" class="btn btn-link p-0 text-decoration-none text-secondary w-100 text-start"><i class="fas fa-minus-circle me-2"></i>Cancel Request</button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-5">No active requests match your current configuration filters.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-3">
+      <nav aria-label="Table pagination">
+        <ul id="pagination" class="pagination pagination-sm justify-content-center mb-0"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODALS CONTAINER (Outside table) ================= -->
+{% for req in requests %}
+  <!-- Purpose Modal -->
+  <div class="modal fade text-start" id="purposeModal{{ req.id }}" tabindex="-1" aria-labelledby="purposeModalLabel{{ req.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title fw-bold text-white" id="purposeModalLabel{{ req.id }}">Reason / Purpose of Request</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="text-secondary small mb-2"><strong>Student:</strong> 
+            {{ req.user.first_name }}
+            {% if req.user.profile.middle_initial and req.user.profile.middle_initial != 'N/A' %}{{ req.user.profile.get_middle_initial_display }}{% endif %}
+            {{ req.user.last_name }}
+          </p>
+          <p class="text-secondary small mb-3"><strong>Document:</strong> {{ req.get_document_type_display }}</p>
+          <div class="bg-light p-3 rounded border text-dark" style="white-space: pre-wrap; word-break: break-word;">
+            {{ req.purpose }}
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 p-3">
+          <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Information Modal -->
+  <div class="modal fade text-start" id="userModal{{ req.id }}" tabindex="-1" aria-labelledby="userModalLabel{{ req.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title fw-bold text-white" id="userModalLabel{{ req.id }}">Student Information</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="d-flex align-items-center mb-3 gap-3">
+            {% if req.user.profile.profile_picture %}
+              <img src="{{ req.user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover;">
+            {% else %}
+              <div class="bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 54px; height: 54px; background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));">
+                {{ req.user.first_name|slice:":1" }}{% if req.user.last_name %}{{ req.user.last_name|slice:":1" }}{% endif %}
+              </div>
+            {% endif %}
+            <div>
+              <h6 class="mb-0 fw-bold fs-5 text-dark">
+                {{ req.user.first_name }}
+                {% if req.user.profile.middle_initial and req.user.profile.middle_initial != 'N/A' %}{{ req.user.profile.get_middle_initial_display }}{% endif %}
+                {{ req.user.last_name }}
+              </h6>
+              <small class="text-muted">Student ID: {{ req.user.profile.student_id|default:"Not Provided" }}</small>
+            </div>
+          </div>
+          <hr class="my-3 text-muted opacity-25">
+          <div class="row g-3">
+            <div class="col-6">
+              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Email Address</small>
+              <span class="text-dark small fw-medium">{{ req.user.email }}</span>
+            </div>
+            <div class="col-6">
+              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Phone Number</small>
+              <span class="text-dark small fw-medium">{{ req.user.profile.phone_number|default:"Not Provided" }}</span>
+            </div>
+            <div class="col-6">
+              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Student Status</small>
+              {% if req.user.profile.student_status %}
+                <span class="badge {% if req.user.profile.student_status == 'student' %}bg-success{% else %}bg-secondary{% endif %}">
+                  {{ req.user.profile.get_student_status_display }}
+                </span>
+              {% else %}
+                <span class="badge bg-secondary">Not Set</span>
+              {% endif %}
+            </div>
+            <div class="col-6">
+              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Year</small>
+              {% if req.user.profile.year %}
+                <span class="badge bg-success">{{ req.user.profile.year }}</span>
+              {% else %}
+                <span class="badge bg-secondary">Not Set</span>
+              {% endif %}
+            </div>
+            <div class="col-12">
+              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Enrolled Course</small>
+              {% if req.course %}
+                <span class="badge course-badge" data-course="{{ req.course }}">{{ req.course }}</span>
+              {% else %}
+                <span class="badge bg-secondary">N/A</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 p-3">
+          <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const totalRequestsCard = document.getElementById('totalRequestsCard');
+  const subStatsContainer = document.getElementById('subStatsContainer');
+  const toggleText = document.getElementById('toggleText');
+
+  totalRequestsCard.addEventListener('click', function() {
+    const isShown = subStatsContainer.classList.toggle('show');
+    totalRequestsCard.classList.toggle('active', isShown);
+
+    if (isShown) {
+      toggleText.innerHTML = '<span>Hide Breakdown</span> <i class="fas fa-chevron-up"></i>';
+    } else {
+      toggleText.innerHTML = '<span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>';
+    }
+  });
+
+  const filterStatus = document.getElementById('filterStatus');
+  const filterPayment = document.getElementById('filterPayment');
+  const filterCourse = document.getElementById('filterCourse');
+  const searchInput = document.getElementById('searchInput');
+  const table = document.getElementById('adminTable');
+  
+  // Clean row selection query
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  const pagination = document.getElementById('pagination');
+  const rowsPerPage = 10;
+  let currentPage = 1;
+  let filteredRows = [];
+
+  if (localStorage.getItem('filterStatus')) filterStatus.value = localStorage.getItem('filterStatus');
+  if (localStorage.getItem('filterPayment')) filterPayment.value = localStorage.getItem('filterPayment');
+  if (localStorage.getItem('filterCourse')) filterCourse.value = localStorage.getItem('filterCourse');
+  if (localStorage.getItem('searchValue')) searchInput.value = localStorage.getItem('searchValue');
+
+  function applyFilters() {
+    const statusValue = filterStatus.value.toLowerCase();
+    const paymentValue = filterPayment.value.toLowerCase();
+    const courseValue = filterCourse.value.toLowerCase();
+    const searchValue = searchInput.value.toLowerCase();
+
+    localStorage.setItem('filterStatus', filterStatus.value);
+    localStorage.setItem('filterPayment', filterPayment.value);
+    localStorage.setItem('filterCourse', filterCourse.value);
+    localStorage.setItem('searchValue', searchInput.value);
+
+    filteredRows = rows.filter(row => {
+      if(row.cells.length <= 1) return false;
+      const rowStatus = row.getAttribute('data-status') ? row.getAttribute('data-status').toLowerCase() : '';
+      const rowPayment = row.getAttribute('data-payment') ? row.getAttribute('data-payment').toLowerCase() : '';
+      const rowCourse = row.getAttribute('data-course') ? row.getAttribute('data-course').toLowerCase() : '';
+      const rowText = row.innerText.toLowerCase();
+
+      const statusMatch = !statusValue || rowStatus === statusValue;
+      const paymentMatch = !paymentValue || rowPayment === paymentValue;
+      const courseMatch = !courseValue || rowCourse === courseValue;
+      const searchMatch = !searchValue || rowText.includes(searchValue);
+
+      return statusMatch && paymentMatch && courseMatch && searchMatch;
+    });
+
+    currentPage = 1;
+    paginateTable();
+  }
+
+  function paginateTable() {
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+
+    rows.forEach(row => row.style.display = 'none');
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    filteredRows.slice(start, end).forEach(row => row.style.display = '');
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    pagination.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#">Prev</a>`;
+    prevLi.addEventListener('click', e => { e.preventDefault(); if (currentPage > 1) { currentPage--; paginateTable(); } });
+    pagination.appendChild(prevLi);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+      li.addEventListener('click', e => { e.preventDefault(); currentPage = i; paginateTable(); });
+      pagination.appendChild(li);
+    }
+
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+    nextLi.addEventListener('click', e => { e.preventDefault(); if (currentPage < totalPages) { currentPage++; paginateTable(); } });
+    pagination.appendChild(nextLi);
+  }
+
+  filterStatus.addEventListener('change', applyFilters);
+  filterPayment.addEventListener('change', applyFilters);
+  filterCourse.addEventListener('change', applyFilters);
+  searchInput.addEventListener('input', applyFilters);
+
+  applyFilters();
+});
+</script>
+{% endblock %}

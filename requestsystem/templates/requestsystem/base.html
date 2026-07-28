@@ -1,0 +1,544 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocQuest - School Registrar Document Request</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary-navy: #1a365d;
+      --primary-gold: #c19a4c;
+      --primary-light: #2d5a87;
+      --bg-light: #f8fafc;
+      --text-dark: #1e293b;
+    }
+
+    body { 
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Improve touch targets for mobile */
+    button, a, .nav-link, .btn {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+    }
+
+    .verification-modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .verification-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    .verification-modal-content h3 {
+      margin: 0 0 15px;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .verification-modal-content p {
+      margin-bottom: 20px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .verification-modal-btn {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+      border: none;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .verification-modal-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(26, 54, 93, 0.25);
+    }
+
+    /* Sidebar Styles */
+    @media (min-width: 769px) {
+      .sidebar-toggle-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: var(--primary-navy);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 12px;
+        z-index: 101;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar-toggle-btn:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+      }
+
+      .sidebar {
+        width: 300px;
+        background: linear-gradient(180deg, var(--primary-navy) 0%, #0f2443 100%);
+        color: white;
+        min-height: 100vh;
+        position: fixed;
+        top: 0;
+        left: -310px; 
+        z-index: 100;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .sidebar.desktop-open {
+        left: 0;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 40px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .sidebar.desktop-open ~ .main-content-wrapper .main-content {
+        margin-left: 300px;
+      }
+
+      .mobile-header {
+        display: none;
+      }
+    }
+
+    /* Sidebar Header */
+    .sidebar-header {
+      background: rgba(0,0,0,0.2);
+      padding: 30px 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .sidebar-logo img {
+      max-width: 60px;
+      max-height: 60px;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
+    /* Sidebar Nav */
+    .sidebar-nav {
+      padding: 25px 15px;
+      flex-grow: 1;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8) !important;
+      padding: 14px 20px;
+      margin: 6px 10px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white !important;
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      background: var(--primary-gold);
+      color: var(--primary-navy) !important;
+      box-shadow: 0 4px 15px rgba(193, 154, 76, 0.3);
+    }
+
+    .nav-link i {
+      width: 22px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .notification-badge {
+      background: #dc3545;
+      color: white;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-left: auto;
+      font-weight: 700;
+    }
+
+    /* Footer */
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-footer .nav-link {
+      color: #ffc107 !important;
+    }
+
+    .sidebar-footer .nav-link:hover {
+      background: rgba(255,193,7,0.1);
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      .sidebar-toggle-btn {
+        display: none;
+      }
+
+      .mobile-header {
+        background: white;
+        color: var(--primary-navy);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 101;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
+      .mobile-brand {
+        color: var(--primary-navy);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mobile-brand img {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--bg-light);
+        padding: 2px;
+      }
+
+      .menu-btn {
+        background: var(--bg-light);
+        border: none;
+        color: var(--primary-navy);
+        font-size: 1.5rem;
+        padding: 10px 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .menu-btn:hover {
+        background: var(--primary-navy);
+        color: white;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0; 
+        left: -100%; 
+        width: 88%;
+        max-width: 320px;
+        height: 100vh;
+        background: linear-gradient(180deg, var(--primary-navy) 0%, #0f2443 100%);
+        z-index: 1050; 
+        display: flex;
+        flex-direction: column;
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none; /* Don't capture clicks when closed */
+      }
+
+      .sidebar.show-menu {
+        left: 0;
+        pointer-events: auto; /* Capture clicks when open */
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(3px);
+        z-index: 1040;
+        display: none;
+        pointer-events: auto;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-content {
+        padding: 25px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="mobile-header">
+    <a class="mobile-brand" href="#">
+      <img src="{% static 'images/cc.png' %}" alt="School Logo">
+      DocQuest
+    </a>
+    <button class="menu-btn" id="menuToggleBtn">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-toggle-btn" id="sidebarToggleBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row">
+    <nav class="sidebar desktop-open" id="sidebarMenu">
+      <div class="sidebar-header">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+          <button class="btn btn-link text-white text-decoration-none p-0" id="closeSidebarBtn" style="font-size: 24px; line-height: 1;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="sidebar-logo">
+          <img src="{% static 'images/cc.png' %}" alt="School Logo">
+        </div>
+        <h2 class="sidebar-title">DOCUMENT REQUEST</h2>
+        <p class="sidebar-subtitle">School Registrar Office</p>
+      </div>
+      
+      <div class="sidebar-nav">
+        <ul class="nav flex-column mb-auto w-100">
+
+          {% if user.is_authenticated %}
+            
+            {% if user.is_staff %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                  <i class="fas fa-chart-line"></i> Admin Dashboard
+                </a>
+              </li> 
+
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'manage_account' %}">
+                  <i class="fas fa-users-cog"></i> Manage Accounts
+                </a>
+              </li> 
+
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'request_analysis' %}">
+                  <i class="fas fa-chart-pie"></i> Request Analysis
+                </a>
+              </li>
+
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                  <i class="fas fa-home"></i> Dashboard
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link request-document-link" href="{% url 'request_document' %}" data-email-verified="{{ user.profile.email_verified|yesno:'true,false' }}">
+                  <i class="fas fa-file-circle-plus"></i> Request Document
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">
+                  <i class="fas fa-user-circle"></i> My Profile
+                </a>
+              </li>
+
+              <li class="nav-item"> 
+                <a class="nav-link position-relative" href="{% url 'notifications' %}">
+                  <i class="fas fa-bell"></i> Notifications
+                  {% if notification_count > 0 %}
+                    <span class="notification-badge">
+                      {{ notification_count }}
+                    </span>
+                  {% endif %}
+                </a>
+              </li>
+            {% endif %}
+
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">
+                <i class="fas fa-sign-in-alt"></i> Login
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}">
+                <i class="fas fa-user-plus"></i> Register
+              </a>
+            </li>
+          {% endif %}
+
+        </ul>
+      </div>
+
+      {% if user.is_authenticated %}
+      <div class="sidebar-footer">
+        <ul class="nav flex-column w-100">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+    </nav>
+
+    <div class="main-content-wrapper flex-grow-1">
+      <main class="main-content">
+        <div class="container-fluid">
+          <!-- Django Messages -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Verification Modal -->
+  <div class="verification-modal-overlay" id="verificationModal">
+    <div class="verification-modal-content">
+      <h3><i class="fas fa-envelope-circle-check me-2"></i> Email Verification Required</h3>
+      <p>Please verify your Gmail account first before requesting documents.</p>
+      <button class="verification-modal-btn" id="closeVerificationModal">Close</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    var sidebar = document.getElementById('sidebarMenu');
+    var overlay = document.getElementById('sidebarOverlay');
+    var toggleBtn = document.getElementById('sidebarToggleBtn');
+
+    // --- DESKTOP LOGIC ---
+    toggleBtn?.addEventListener('click', function() {
+      sidebar.classList.toggle('desktop-open');
+    });
+
+    document.getElementById('closeSidebarBtn')?.addEventListener('click', function() {
+      sidebar.classList.remove('desktop-open');
+      sidebar.classList.remove('show-menu');
+      overlay.classList.remove('active');
+    });
+
+    // --- MOBILE LOGIC ---
+    function toggleMobileMenu() {
+      sidebar.classList.toggle('show-menu');
+      overlay.classList.toggle('active');
+    }
+
+    document.getElementById('menuToggleBtn')?.addEventListener('click', toggleMobileMenu);
+    
+    overlay.addEventListener('click', toggleMobileMenu);
+
+    // --- Request Document Link Verification ---
+    document.addEventListener('DOMContentLoaded', function() {
+      const verificationModal = document.getElementById('verificationModal');
+      const closeVerificationModalBtn = document.getElementById('closeVerificationModal');
+      const requestDocumentLinks = document.querySelectorAll('.request-document-link');
+
+      requestDocumentLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          const isVerified = this.getAttribute('data-email-verified') === 'true';
+          if (!isVerified) {
+            e.preventDefault();
+            verificationModal.style.display = 'flex';
+          }
+        });
+      });
+
+      closeVerificationModalBtn.addEventListener('click', function() {
+        verificationModal.style.display = 'none';
+      });
+
+      verificationModal.addEventListener('click', function(e) {
+        if (e.target === verificationModal) {
+          verificationModal.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

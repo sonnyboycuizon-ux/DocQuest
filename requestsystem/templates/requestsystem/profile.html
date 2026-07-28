@@ -1,0 +1,749 @@
+{% extends 'requestsystem/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  body::before {
+    content: '';
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 350px;
+    height: 350px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+  }
+
+  .profile-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .profile-header {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    padding: 35px 30px;
+    text-align: center;
+    color: white;
+  }
+
+  /* Avatar Wrapper & Floating Upload Button */
+  .avatar-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 15px;
+  }
+
+  .profile-avatar {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 50%;
+    color: var(--primary-navy);
+    font-size: 36px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+
+  .btn-avatar-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    background: #d97706;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+  }
+
+  .btn-avatar-upload:hover {
+    background: #b45309;
+    transform: scale(1.1);
+  }
+
+  .profile-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .profile-header p {
+    margin: 6px 0 0;
+    opacity: 0.9;
+    font-size: 14px;
+  }
+
+  .profile-body {
+    padding: 30px;
+  }
+
+  .profile-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .profile-item:last-child {
+    border-bottom: none;
+  }
+
+  .profile-label {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .profile-value {
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  /* Compact Edit Pencil Button */
+  .btn-icon-edit {
+    background: transparent;
+    border: none;
+    color: #d97706;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-icon-edit:hover {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    color: white;
+  }
+
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #475569;
+  }
+
+  .badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .bg-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+
+  .bg-secondary {
+    background: #e2e8f0;
+    color: #475569;
+  }
+
+  input, select {
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-navy);
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+  }
+
+  .verify-box {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .code-feedback {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+
+  .status-container {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .status-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  @media (max-width: 550px) {
+    .profile-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .status-container {
+      text-align: left;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    input, select {
+      width: 100% !important;
+    }
+  }
+</style>
+
+<div class="container">
+  <h1 class="page-title">My Profile</h1>
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <!-- Circle Avatar with Upload Icon -->
+      <div class="avatar-container">
+        <div class="profile-avatar">
+          {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+          {% else %}
+            {{ user.username|slice:":1"|upper }}
+          {% endif %}
+        </div>
+        
+        <!-- Camera Button to trigger file upload -->
+        <label for="profilePictureInput" class="btn-avatar-upload" title="Change Profile Picture">
+          <i class="fas fa-camera"></i>
+        </label>
+        
+        <!-- Hidden File Input -->
+        <form id="profilePicForm" style="display: none;">
+          {% csrf_token %}
+          <input type="file" id="profilePictureInput" accept="image/*">
+        </form>
+      </div>
+
+      <h2>
+        {{ user.first_name }}
+        {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' %}
+          {{ user.profile.get_middle_initial_display }}
+        {% endif %}
+        {{ user.last_name }}
+      </h2>
+      <p>@{{ user.username }}</p>
+      <div id="profilePicFeedback" class="code-feedback" style="margin-top: 5px;"></div>
+    </div>
+
+    <div class="profile-body">
+      <div class="profile-item">
+        <div class="profile-label">First Name</div>
+        <div class="profile-value">{{ user.first_name }}</div>
+      </div>
+
+      <div class="profile-item">
+        <div class="profile-label">Middle Initial</div>
+        <div class="status-container">
+          <div id="middleInitialDisplay">
+            <div class="status-badge-row">
+              {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' %}
+                <span class="badge bg-success">{{ user.profile.get_middle_initial_display }}</span>
+              {% else %}
+                <span class="badge bg-secondary">Not Set</span>
+              {% endif %}
+              <button type="button" id="editMiddleInitialBtn" class="btn-icon-edit" title="Edit Middle Initial">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div id="middleInitialEdit" style="display: none;">
+            <form id="middleInitialForm">
+              {% csrf_token %}
+              <select id="middleInitialSelect" class="form-select" style="width: 170px;">
+                {% for value, label in user.profile.MIDDLE_INITIAL_CHOICES %}
+                  <option value="{{ value }}" {% if user.profile.middle_initial == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <div class="verify-box" style="margin-top: 8px; justify-content: flex-end;">
+                <button type="button" id="saveMiddleInitialBtn" class="btn btn-primary btn-sm">Save</button>
+                <button type="button" id="cancelMiddleInitialBtn" class="btn btn-secondary btn-sm">Cancel</button>
+              </div>
+            </form>
+            <div id="middleInitialFeedback" class="code-feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-item">
+        <div class="profile-label">Last Name</div>
+        <div class="profile-value">{{ user.last_name }}</div>
+      </div>
+
+      <!-- Year Section -->
+      <div class="profile-item">
+        <div class="profile-label">Year</div>
+        <div class="status-container">
+          <div id="yearDisplay">
+            <div class="status-badge-row">
+              {% if user.profile.year %}
+                <span class="badge bg-success">{{ user.profile.year }}</span>
+              {% else %}
+                <span class="badge bg-secondary">Not Set</span>
+              {% endif %}
+              <button type="button" id="editYearBtn" class="btn-icon-edit" title="Edit Year">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div id="yearEdit" style="display: none;">
+            <form id="yearForm">
+              {% csrf_token %}
+              <select id="yearSelect" class="form-select" style="width: 170px;">
+                <option value="">Select Year</option>
+                <option value="1st Year" {% if user.profile.year == '1st Year' %}selected{% endif %}>1st Year</option>
+                <option value="2nd Year" {% if user.profile.year == '2nd Year' %}selected{% endif %}>2nd Year</option>
+                <option value="3rd Year" {% if user.profile.year == '3rd Year' %}selected{% endif %}>3rd Year</option>
+                <option value="4th Year" {% if user.profile.year == '4th Year' %}selected{% endif %}>4th Year</option>
+                <option value="Graduated" {% if user.profile.year == 'Graduated' %}selected{% endif %}>Graduated</option>
+              </select>
+              <div class="verify-box" style="margin-top: 8px; justify-content: flex-end;">
+                <button type="button" id="saveYearBtn" class="btn btn-primary btn-sm">Save</button>
+                <button type="button" id="cancelYearBtn" class="btn btn-secondary btn-sm">Cancel</button>
+              </div>
+            </form>
+            <div id="yearFeedback" class="code-feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Status Section -->
+      <div class="profile-item">
+        <div class="profile-label">Student Status</div>
+        <div class="status-container">
+          <div id="studentStatusDisplay">
+            <div class="status-badge-row">
+              {% if user.profile.student_status %}
+                <span class="badge {% if user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}bg-success{% else %}bg-secondary{% endif %}">
+                  {% if user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}
+                    Current Student
+                  {% else %}
+                    {{ user.profile.get_student_status_display }}
+                  {% endif %}
+                </span>
+              {% else %}
+                <span class="badge bg-secondary">Not Set</span>
+              {% endif %}
+              <button type="button" id="editStudentInfoBtn" class="btn-icon-edit" title="Edit Student Status">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </div>
+
+            {% if user.profile.student_id and user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}
+              <div class="profile-value" style="margin-top: 4px; font-weight: 500;">
+                Student ID: {{ user.profile.student_id }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div id="studentStatusEdit" style="display: none;">
+            <form id="studentInfoForm" style="display: inline;">
+              {% csrf_token %}
+            </form>
+            <select id="studentStatusSelect" class="form-select" style="width: 170px;">
+              <option value="student" {% if user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}selected{% endif %}>Current Student</option>
+              <option value="graduated" {% if user.profile.student_status == 'graduated' %}selected{% endif %}>Graduated</option>
+            </select>
+            
+            <div id="studentIdContainer" style="margin-top: 6px; {% if user.profile.student_status != 'student' and user.profile.student_status != 'regular' %}display: none;{% endif %}">
+              <input type="text" id="studentIdInput" class="form-control" placeholder="Enter Student ID" value="{{ user.profile.student_id|default:'' }}" style="width: 170px;">
+            </div>
+            
+            <div class="verify-box" style="margin-top: 8px; justify-content: flex-end;">
+              <button type="button" id="saveStudentInfoBtn" class="btn btn-primary btn-sm">Save</button>
+              <button type="button" id="cancelStudentInfoBtn" class="btn btn-secondary btn-sm">Cancel</button>
+            </div>
+            <div id="studentInfoFeedback" class="code-feedback"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-item">
+        <div class="profile-label">Email</div>
+        <div style="text-align: right;">
+          <div class="profile-value">{{ user.email }}</div>
+          {% if user.profile.email_verified %}
+            <span class="badge bg-success mt-1 d-inline-block">✓ Verified</span>
+          {% else %}
+            <div class="verify-box" style="justify-content: flex-end;">
+              <form id="emailVerifyForm" style="display:inline;">
+                {% csrf_token %}
+                <button type="button" id="verifyEmailBtn" class="btn btn-warning btn-sm">Verify Now</button>
+              </form>
+              <div id="emailCodeContainer" style="display: none;">
+                <form id="verifyEmailCodeForm" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="text" id="emailCodeInput" placeholder="Enter code" style="width: 110px;">
+                  <button type="button" id="submitCodeBtn" class="btn btn-primary btn-sm">Submit</button>
+                </form>
+              </div>
+            </div>
+            <div id="codeFeedback" class="code-feedback"></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="profile-item">
+        <div class="profile-label">Phone</div>
+        <div>
+          {% if user.profile.phone_number %}
+            <div class="profile-value">{{ user.profile.phone_number }}</div>
+          {% else %}
+            <span class="badge bg-secondary">Not Set</span>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function getCsrfToken() {
+    const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+    return tokenElement ? tokenElement.value : '';
+  }
+
+  // Automatic Upload on Picture Selection
+  const profilePictureInput = document.getElementById('profilePictureInput');
+  const profilePicFeedback = document.getElementById('profilePicFeedback');
+
+  profilePictureInput?.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      const formData = new FormData();
+      formData.append('profile_picture', this.files[0]);
+
+      if (profilePicFeedback) {
+        profilePicFeedback.textContent = 'Uploading...';
+        profilePicFeedback.style.color = '#f59e0b';
+      }
+
+      fetch("{% url 'update_profile' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCsrfToken()
+        },
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (profilePicFeedback) {
+          if (data.success) {
+            profilePicFeedback.textContent = data.message || 'Profile picture updated!';
+            profilePicFeedback.style.color = '#10b981';
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            profilePicFeedback.textContent = data.message || 'Failed to upload image.';
+            profilePicFeedback.style.color = '#ef4444';
+          }
+        }
+      })
+      .catch(() => {
+        if (profilePicFeedback) {
+          profilePicFeedback.textContent = 'An error occurred during upload.';
+          profilePicFeedback.style.color = '#ef4444';
+        }
+      });
+    }
+  });
+
+  // Email verification JS
+  const btn = document.getElementById('verifyEmailBtn');
+  const codeContainer = document.getElementById('emailCodeContainer');
+  const submitBtn = document.getElementById('submitCodeBtn');
+  const codeInput = document.getElementById('emailCodeInput');
+  const feedback = document.getElementById('codeFeedback');
+
+  btn?.addEventListener('click', function() {
+    fetch("{% url 'send_verification_code' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: JSON.stringify({})
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        feedback.textContent = data.message;
+        feedback.style.color = '#059669';
+        codeContainer.style.display = 'block';
+      } else {
+        feedback.textContent = data.message || 'Failed to send code.';
+        feedback.style.color = '#dc2626';
+      }
+    });
+  });
+
+  submitBtn?.addEventListener('click', function() {
+    const code = codeInput.value.trim();
+    if (!code) {
+      feedback.textContent = 'Please enter the code.';
+      feedback.style.color = '#dc2626';
+      return;
+    }
+    fetch("{% url 'verify_email_code' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: JSON.stringify({ code: code })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        feedback.textContent = 'Email verified successfully!';
+        feedback.style.color = '#059669';
+        codeContainer.style.display = 'none';
+        btn.style.display = 'none';
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        feedback.textContent = 'Incorrect code, try again.';
+        feedback.style.color = '#dc2626';
+      }
+    });
+  });
+
+  // Student info edit/save JS
+  const editStudentInfoBtn = document.getElementById('editStudentInfoBtn');
+  const studentStatusDisplay = document.getElementById('studentStatusDisplay');
+  const studentStatusEdit = document.getElementById('studentStatusEdit');
+  const studentStatusSelect = document.getElementById('studentStatusSelect');
+  const studentIdContainer = document.getElementById('studentIdContainer');
+  const studentIdInput = document.getElementById('studentIdInput');
+  const saveStudentInfoBtn = document.getElementById('saveStudentInfoBtn');
+  const cancelStudentInfoBtn = document.getElementById('cancelStudentInfoBtn');
+  const studentInfoFeedback = document.getElementById('studentInfoFeedback');
+
+  let originalStatus = studentStatusSelect ? studentStatusSelect.value : 'student';
+  let originalStudentId = studentIdInput ? studentIdInput.value : '';
+
+  editStudentInfoBtn?.addEventListener('click', function() {
+    if (studentStatusDisplay && studentStatusEdit) {
+      studentStatusDisplay.style.display = 'none';
+      studentStatusEdit.style.display = 'block';
+    }
+  });
+
+  cancelStudentInfoBtn?.addEventListener('click', function() {
+    if (studentStatusSelect && studentIdInput && studentIdContainer && studentStatusEdit && studentStatusDisplay) {
+      studentStatusSelect.value = originalStatus;
+      studentIdInput.value = originalStudentId;
+      studentIdContainer.style.display = (originalStatus === 'student' || originalStatus === 'regular') ? 'block' : 'none';
+      studentStatusEdit.style.display = 'none';
+      studentStatusDisplay.style.display = 'block';
+      if (studentInfoFeedback) studentInfoFeedback.textContent = '';
+    }
+  });
+
+  studentStatusSelect?.addEventListener('change', function() {
+    if (studentIdContainer) {
+      studentIdContainer.style.display = (this.value === 'student' || this.value === 'regular') ? 'block' : 'none';
+    }
+  });
+
+  saveStudentInfoBtn?.addEventListener('click', function() {
+    if (!studentStatusSelect || !studentIdInput) return;
+    
+    const status = studentStatusSelect.value;
+    const studentId = studentIdInput.value.trim();
+
+    fetch("{% url 'save_student_info' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: JSON.stringify({ status: status, student_id: studentId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (studentInfoFeedback) {
+        if (data.success) {
+          studentInfoFeedback.textContent = data.message;
+          studentInfoFeedback.style.color = '#059669';
+          originalStatus = status;
+          originalStudentId = studentId;
+          setTimeout(() => location.reload(), 1200);
+        } else {
+          studentInfoFeedback.textContent = data.message || 'Failed to save information.';
+          studentInfoFeedback.style.color = '#dc2626';
+        }
+      }
+    });
+  });
+
+  // Year edit/save JS
+  const editYearBtn = document.getElementById('editYearBtn');
+  const yearDisplay = document.getElementById('yearDisplay');
+  const yearEdit = document.getElementById('yearEdit');
+  const yearSelect = document.getElementById('yearSelect');
+  const saveYearBtn = document.getElementById('saveYearBtn');
+  const cancelYearBtn = document.getElementById('cancelYearBtn');
+  const yearFeedback = document.getElementById('yearFeedback');
+  const originalYear = yearSelect ? yearSelect.value : '';
+
+  editYearBtn?.addEventListener('click', function() {
+    if (yearDisplay && yearEdit) {
+      yearDisplay.style.display = 'none';
+      yearEdit.style.display = 'block';
+    }
+  });
+
+  cancelYearBtn?.addEventListener('click', function() {
+    if (yearSelect && yearEdit && yearDisplay) {
+      yearSelect.value = originalYear;
+      yearEdit.style.display = 'none';
+      yearDisplay.style.display = 'block';
+      if (yearFeedback) yearFeedback.textContent = '';
+    }
+  });
+
+  saveYearBtn?.addEventListener('click', function() {
+    if (!yearSelect) return;
+    
+    const formData = new FormData();
+    formData.append('year', yearSelect.value);
+
+    fetch("{% url 'update_profile' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (yearFeedback) {
+        if (data.success) {
+          yearFeedback.textContent = data.message;
+          yearFeedback.style.color = '#059669';
+          setTimeout(() => location.reload(), 1200);
+        } else {
+          yearFeedback.textContent = data.message || 'Failed to save year.';
+          yearFeedback.style.color = '#dc2626';
+        }
+      }
+    });
+  });
+
+  // Middle Initial edit/save JS
+  const editMiddleInitialBtn = document.getElementById('editMiddleInitialBtn');
+  const middleInitialDisplay = document.getElementById('middleInitialDisplay');
+  const middleInitialEdit = document.getElementById('middleInitialEdit');
+  const middleInitialSelect = document.getElementById('middleInitialSelect');
+  const saveMiddleInitialBtn = document.getElementById('saveMiddleInitialBtn');
+  const cancelMiddleInitialBtn = document.getElementById('cancelMiddleInitialBtn');
+  const middleInitialFeedback = document.getElementById('middleInitialFeedback');
+  const originalMiddleInitial = middleInitialSelect ? middleInitialSelect.value : 'N/A';
+
+  editMiddleInitialBtn?.addEventListener('click', function() {
+    if (middleInitialDisplay && middleInitialEdit) {
+      middleInitialDisplay.style.display = 'none';
+      middleInitialEdit.style.display = 'block';
+    }
+  });
+
+  cancelMiddleInitialBtn?.addEventListener('click', function() {
+    if (middleInitialSelect && middleInitialEdit && middleInitialDisplay) {
+      middleInitialSelect.value = originalMiddleInitial;
+      middleInitialEdit.style.display = 'none';
+      middleInitialDisplay.style.display = 'block';
+      if (middleInitialFeedback) middleInitialFeedback.textContent = '';
+    }
+  });
+
+  saveMiddleInitialBtn?.addEventListener('click', function() {
+    if (!middleInitialSelect) return;
+    
+    const formData = new FormData();
+    formData.append('middle_initial', middleInitialSelect.value);
+
+    fetch("{% url 'update_profile' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (middleInitialFeedback) {
+        if (data.success) {
+          middleInitialFeedback.textContent = data.message;
+          middleInitialFeedback.style.color = '#059669';
+          setTimeout(() => location.reload(), 1200);
+        } else {
+          middleInitialFeedback.textContent = data.message || 'Failed to save middle initial.';
+          middleInitialFeedback.style.color = '#dc2626';
+        }
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
