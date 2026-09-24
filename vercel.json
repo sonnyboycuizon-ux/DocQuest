@@ -1,17 +1,32 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+  "buildCommand": "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py create_superuser || true",
+  "outputDirectory": "staticfiles",
   "functions": {
     "api/index.py": {
-      "includeFiles": "requestsystem/**,documate/**,static/**,templates/**,media/**,manage.py,db.sqlite3"
+      "includeFiles": "{requestsystem,documate,static,templates,media}/**/*.{py,html,css,js,jpg,jpeg,png,gif,webp,svg,woff,woff2,ttf,eot,json,yaml,yml,txt}",
+      "excludeFiles": "**/__pycache__/**,**/*.pyc,**/*.pyo",
+      "maxDuration": 30
     }
   },
-  "installCommand": "pip install -r requirements.txt",
-  "buildCommand": "python manage.py collectstatic --noinput 2>&1 || true",
-  "framework": null,
-  "outputDirectory": "staticfiles",
   "rewrites": [
+    {
+      "source": "/static/(.*)",
+      "destination": "/static/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/api/index.py"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
     }
   ]
 }
