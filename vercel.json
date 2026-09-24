@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "requestsystem/**,documate/**,static/**,templates/**,media/**,manage.py,db.sqlite3"
+    }
+  },
+  "installCommand": "pip install -r requirements.txt",
+  "buildCommand": "python manage.py collectstatic --noinput 2>&1 || true",
+  "framework": null,
+  "outputDirectory": "staticfiles",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.py"
+    }
+  ]
+}

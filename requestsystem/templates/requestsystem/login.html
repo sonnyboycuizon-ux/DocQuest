@@ -1,109 +1,186 @@
 {% extends 'requestsystem/base.html' %}
 {% load static %}
+
+{% block sidebar_elements %}{% endblock %}
+{% block sidebar_nav %}{% endblock %}
+{% block sidebar_script %}{% endblock %}
+
 {% block content %}
 <style>
-  body {
-    background: linear-gradient(135deg, var(--bg-light) 0%, #e2e8f0 100%);
+  .main-content {
+    padding: 0 !important;
+    margin-left: 0 !important;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  
+
+  .main-content .container-fluid {
+    padding: 0 !important;
+    width: 100%;
+  }
+
+  body {
+    background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #0f2443 60%, #07101f 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+
   .login-container {
-    max-width: 420px;
-    margin: 30px auto;
-    padding: 0 15px;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 30px 18px;
+    position: relative;
+    z-index: 1;
   }
 
   .login-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(26, 54, 93, 0.15);
+    background: #ffffff;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: loginFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes loginFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .login-header {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, #0f2443 100%);
+    background: linear-gradient(180deg, #091528 0%, #0d1e38 100%);
     color: white;
-    padding: 25px 20px;
+    padding: 34px 24px 28px;
     text-align: center;
+    position: relative;
+    border-bottom: 2px solid rgba(193, 154, 76, 0.3);
+  }
+
+  .login-header::after {
+    content: '';
+    position: absolute;
+    width: 220px;
+    height: 100px;
+    background: radial-gradient(ellipse, rgba(193, 154, 76, 0.15) 0%, transparent 70%);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .login-logo {
-    width: 75px;
-    height: 75px;
+    width: 76px;
+    height: 76px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    margin: 0 auto 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(193, 154, 76, 0.5);
+    padding: 8px;
+    position: relative;
+    z-index: 1;
   }
 
   .login-logo img {
-    max-width: 50px;
-    max-height: 50px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
   }
 
   .login-title {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     margin: 0 0 4px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
   }
 
   .login-subtitle {
     font-size: 13px;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 400;
+    margin: 0;
   }
 
   .login-body {
-    padding: 25px 25px;
+    padding: 32px 30px;
+    background: #ffffff;
   }
 
   .form-floating {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
-  /* Container wrapper para sa password toggle */
   .password-wrapper {
     position: relative;
   }
 
   .form-control {
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 14.5px;
+    transition: all 0.25s ease;
+    background: #f8fafc;
+    color: var(--text-dark);
   }
 
-  /* Hatagan og space ang right side aron dili mag-overlap ang text ug icon */
+  .form-floating>.form-control {
+    height: 56px;
+    line-height: 1.25;
+  }
+
+  .form-floating>label {
+    padding: 16px 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
   .password-wrapper .form-control {
-    padding-right: 42px;
+    padding-right: 48px;
   }
 
   .form-control:focus {
-    border-color: var(--primary-navy);
-    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.08);
+    border-color: var(--primary-light);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
   }
 
-  .form-label {
-    color: var(--text-dark);
-    font-weight: 500;
-  }
-
-  /* Style sa Toggle Password Icon */
   .toggle-password {
     position: absolute;
-    right: 12px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #64748b;
+    color: var(--text-muted);
     cursor: pointer;
     z-index: 10;
-    padding: 4px;
+    padding: 6px;
     font-size: 15px;
     transition: color 0.2s ease;
   }
@@ -115,43 +192,54 @@
   .btn-primary {
     background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
     border: none;
-    border-radius: 10px;
-    padding: 11px;
+    border-radius: var(--radius-sm);
+    padding: 13px;
     font-size: 15px;
     font-weight: 600;
     width: 100%;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.2);
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(15, 36, 67, 0.25);
+    color: white;
   }
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(26, 54, 93, 0.25);
+    box-shadow: 0 8px 22px rgba(15, 36, 67, 0.35);
+    color: white;
   }
 
   .alert {
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     border: none;
-    padding: 10px 15px;
-    font-size: 13px;
+    padding: 12px 35px 12px 16px;
+    font-size: 13.5px;
+    position: relative;
+    font-weight: 500;
+  }
+
+  .alert-danger,
+  .alert-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-left: 3px solid #ef4444;
   }
 
   .forgot-link {
-    color: var(--primary-navy);
+    color: var(--primary-light);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 13px;
     transition: color 0.2s;
   }
 
   .forgot-link:hover {
-    color: var(--primary-gold);
+    color: var(--primary-gold-dark);
     text-decoration: underline;
   }
 
   .signup-text {
-    font-size: 13px;
-    color: var(--text-dark);
+    font-size: 13.5px;
+    color: var(--text-muted);
   }
 
   .signup-link {
@@ -162,8 +250,24 @@
   }
 
   .signup-link:hover {
-    color: var(--primary-gold);
+    color: var(--primary-gold-dark);
     text-decoration: underline;
+  }
+
+  .back-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 18px;
+    transition: color 0.2s;
+  }
+
+  .back-home-link:hover {
+    color: white;
   }
 </style>
 
@@ -171,50 +275,55 @@
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
-        <img src="{% static 'images/cc.png' %}" alt="School Logo">
+        <img src="{% static 'images/cc.png' %}" alt="School Seal">
       </div>
       <h1 class="login-title">DocQuest</h1>
       <p class="login-subtitle">School Registrar Document Request System</p>
     </div>
 
     <div class="login-body">
+      <!-- Alerts container inside card body -->
       {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center mb-3" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
+      {% for message in messages %}
+      <div
+        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-3"
+        role="alert">
+        <span>{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
       {% endif %}
 
       <form method="post">
         {% csrf_token %}
         <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="floatingUsername" name="username" placeholder="Username" required>
-          <label for="floatingUsername">Username</label>
+          <input type="text" class="form-control" id="floatingUsername" name="username" placeholder="Username" required
+            autocomplete="username">
+          <label for="floatingUsername"><i class="fas fa-user me-2 text-muted"></i>Username</label>
         </div>
-        
+
         <div class="form-floating mb-2 password-wrapper">
-          <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
-          <label for="floatingPassword">Password</label>
+          <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password"
+            required autocomplete="current-password">
+          <label for="floatingPassword"><i class="fas fa-lock me-2 text-muted"></i>Password</label>
           <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Toggle password visibility">
             <i class="fas fa-eye" id="toggleIcon"></i>
           </button>
         </div>
 
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-end mb-4">
           <a href="{% url 'password_reset' %}" class="forgot-link">Forgot Password?</a>
         </div>
-        
+
         <button type="submit" class="btn btn-primary">
-          <i class="fas fa-sign-in-alt me-2"></i> Login
+          <i class="fas fa-sign-in-alt me-2"></i> Sign In to Portal
         </button>
       </form>
 
-      <div class="text-center mt-3">
+      <div class="text-center mt-4 pt-3 border-top">
         <p class="signup-text mb-0">
-          Don't have an account? 
-          <a href="{% url 'register' %}" class="signup-link">Sign Up</a>
+          Don't have an account?
+          <a href="{% url 'register' %}" class="signup-link">Register Student Account</a>
         </p>
       </div>
     </div>
@@ -222,20 +331,18 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
-  const passwordInput = document.getElementById('floatingPassword');
-  const toggleIcon = document.getElementById('toggleIcon');
+  document.addEventListener('DOMContentLoaded', function () {
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const passwordInput = document.getElementById('floatingPassword');
+    const toggleIcon = document.getElementById('toggleIcon');
 
-  togglePasswordBtn.addEventListener('click', function() {
-    // Switch between 'password' and 'text'
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    
-    // Switch FontAwesome eye icon (fa-eye <-> fa-eye-slash)
-    toggleIcon.classList.toggle('fa-eye');
-    toggleIcon.classList.toggle('fa-eye-slash');
+    togglePasswordBtn?.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+
+      toggleIcon.classList.toggle('fa-eye');
+      toggleIcon.classList.toggle('fa-eye-slash');
+    });
   });
-});
 </script>
 {% endblock %}

@@ -19,7 +19,7 @@
     z-index: 0;
   }
 
-  .admin-dashboard-container {
+  .standard-admin-container {
     position: relative;
     z-index: 1;
     max-width: 1360px;
@@ -27,13 +27,48 @@
     padding-bottom: 50px;
   }
 
-  .page-header-container {
+  .role-banner {
+    background: linear-gradient(135deg, #091528 0%, #1e3a8a 60%, var(--primary-gold) 100%);
+    color: white;
+    padding: 18px 26px;
+    border-radius: var(--radius-md);
     margin-bottom: 24px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 14px;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(193, 154, 76, 0.3);
+  }
+
+  .role-banner-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--primary-gold-light);
+    flex-shrink: 0;
+  }
+
+  .role-banner-text h4 {
+    margin: 0;
+    font-weight: 800;
+    font-size: 16px;
+    color: #ffffff;
+  }
+
+  .role-banner-text p {
+    margin: 2px 0 0 0;
+    opacity: 0.88;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .page-header-container {
+    margin-bottom: 24px;
   }
 
   .page-title {
@@ -48,19 +83,6 @@
     font-size: 14px;
     color: var(--text-muted);
     margin-bottom: 0;
-  }
-
-  .admin-role-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgba(15, 36, 67, 0.06);
-    border: 1px solid rgba(15, 36, 67, 0.12);
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--primary-navy);
   }
 
   /* --- STATS SECTION --- */
@@ -88,7 +110,7 @@
   .main-stat-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
-    border-color: var(--primary-light);
+    border-color: var(--primary-gold);
   }
 
   .main-stat-title {
@@ -121,7 +143,7 @@
   }
 
   .main-stat-card:hover .toggle-text {
-    background: var(--primary-navy);
+    background: var(--primary-gold);
     color: white;
   }
 
@@ -227,8 +249,8 @@
   }
 
   .form-select:focus, .form-control:focus {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 4px rgba(193, 154, 76, 0.15);
     outline: none;
     background: white;
   }
@@ -277,7 +299,7 @@
   }
 
   tbody tr:hover {
-    background: #f8fafc;
+    background: #fffdf7;
   }
 
   .course-badge {
@@ -293,7 +315,6 @@
   .course-badge[data-course="BSED"], .course-badge[data-course="BEED"] { background-color: #d1fae5; color: #065f46; }
   .course-badge[data-course="BSENTREP"] { background-color: #fee2e2; color: #991b1b; }
 
-  /* Status Pills with subtle dot */
   .status-pill {
     font-weight: 700;
     padding: 5px 12px;
@@ -342,8 +363,8 @@
   }
 
   .btn-outline-secondary:hover {
-    border-color: var(--primary-navy);
-    background: var(--primary-navy);
+    border-color: var(--primary-gold-dark);
+    background: var(--primary-gold);
     color: white;
   }
 
@@ -363,7 +384,7 @@
   }
 
   .dropdown-item:hover {
-    background: #f8fafc;
+    background: #fffdf5;
   }
 
   .purpose-link {
@@ -392,11 +413,11 @@
 
   .pagination .page-link:hover {
     background: #f1f5f9;
-    border-color: var(--primary-light);
+    border-color: var(--primary-gold);
   }
 
   .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-dark));
     color: white;
     border-color: transparent;
   }
@@ -412,13 +433,12 @@
     background: linear-gradient(135deg, #091528 0%, #1e3a8a 100%);
     color: white;
     padding: 20px 24px;
-    border-bottom: 2px solid rgba(193, 154, 76, 0.3);
+    border-bottom: 2px solid rgba(193, 154, 76, 0.4);
   }
 
   .modal-title {
     font-weight: 800;
     font-size: 18px;
-    letter-spacing: -0.01em;
   }
 
   .modal-footer {
@@ -428,23 +448,27 @@
   }
 </style>
 
-<div class="admin-dashboard-container">
+<div class="standard-admin-container">
+  <div class="role-banner">
+    <div class="role-banner-icon">
+      <i class="fas fa-landmark"></i>
+    </div>
+    <div class="role-banner-text">
+      <h4>Treasurer's Office — Administration</h4>
+      <p>Verify payments, process document request orders, and manage disbursement records.</p>
+    </div>
+  </div>
+
   <div class="page-header-container">
-    <div>
-      <div class="page-title">Registrar Admin Dashboard</div>
-      <div class="page-subtitle">Review, evaluate, and fulfill student official document requests.</div>
-    </div>
-    <div class="admin-role-pill">
-      <i class="fas fa-shield-halved" style="color: var(--primary-gold);"></i>
-      <span>Registrar Command Center</span>
-    </div>
+    <div class="page-title">Document Request Orders</div>
+    <div class="page-subtitle">Review, update, and confirm student document requests with verified payment.</div>
   </div>
 
   <!-- Stats Section -->
   <div class="stats-section">
     <div class="main-stat-card" id="totalRequestsCard">
       <div>
-        <div class="main-stat-title">Total Requests</div>
+        <div class="main-stat-title">Total Orders</div>
         <div class="main-stat-value">{{ total_requests }}</div>
       </div>
       <div class="toggle-text" id="toggleText">
@@ -496,9 +520,12 @@
         </select>
       </div>
       <div class="col-md-3">
-        <label for="filterPayment" class="form-label">Payment Option</label>
+        <label for="filterPayment" class="form-label">Payment Method</label>
         <select id="filterPayment" class="form-select">
-          <option value="Registrar">Pay at Treasurer Office</option>
+          <option value="">All Payments</option>
+          <option value="registrar">Pay at Treasurer Office</option>
+          <option value="bank">Bank Payment</option>
+          <option value="none">No Payment</option>
         </select>
       </div>
       <div class="col-md-3">
@@ -511,7 +538,7 @@
         </select>
       </div>
       <div class="col-md-3">
-        <label for="searchInput" class="form-label">Search Request</label>
+        <label for="searchInput" class="form-label">Search Orders</label>
         <input type="text" id="searchInput" class="form-control" placeholder="Search student, document...">
       </div>
     </div>
@@ -536,7 +563,7 @@
         <tbody>
           {% for req in requests %}
           <tr data-status="{{ req.status }}"
-              data-payment="{% if req.payment_receipt %}Bank{% elif req.payment_status == 'Pending' %}Registrar{% else %}No Payment{% endif %}"
+              data-payment="{% if req.payment_receipt %}bank{% elif req.payment_status == 'Pending' %}registrar{% else %}none{% endif %}"
               data-course="{{ req.course }}">
             <td class="ps-4 text-muted fw-semibold">#{{ req.id }}</td>
             <td>
@@ -544,7 +571,7 @@
                 {% if req.user.profile.profile_picture %}
                   <img src="{{ req.user.profile.profile_picture.url }}" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0;" onerror="this.style.display='none';">
                 {% else %}
-                  <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                  <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--primary-navy)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
                     {{ req.user.first_name|slice:":1" }}{% if req.user.last_name %}{{ req.user.last_name|slice:":1" }}{% endif %}
                   </div>
                 {% endif %}
@@ -554,10 +581,9 @@
                     {% if req.user.profile.middle_initial and req.user.profile.middle_initial != 'N/A' %}{{ req.user.profile.get_middle_initial_display }}{% endif %}
                     {{ req.user.last_name }}
                   </span>
-                  <button type="button" class="btn btn-sm btn-link text-primary p-0 shadow-none border-0 mt-0 align-self-start lh-1"
-                          data-bs-toggle="modal" data-bs-target="#userModal{{ req.id }}" title="View Student Profile" style="font-size: 12px; text-decoration: none;">
-                    <i class="fas fa-id-card me-1"></i> View Profile
-                  </button>
+                  <small class="text-muted">
+                    ID: <strong style="color: var(--text-dark);">{{ req.user.profile.student_id|default:"N/A" }}</strong>
+                  </small>
                 </div>
               </div>
             </td>
@@ -580,7 +606,7 @@
                   </a>
                 </div>
               {% elif req.payment_status == 'Pending' %}
-                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1 small fw-semibold">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1 small fw-semibold">
                   Treasurer Office
                 </span>
               {% else %}
@@ -606,7 +632,7 @@
             <td class="text-end pe-4">
               <div class="dropdown">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Manage
+                  Process
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                   <li>
@@ -615,29 +641,7 @@
                       <button type="submit" name="action" value="approve" class="btn btn-link p-0 text-decoration-none text-success w-100 text-start fw-semibold"><i class="fas fa-check-circle me-2"></i>Approve Request</button>
                     </form>
                   </li>
-                  {% if user.is_superuser %}
-                  <li>
-                    <form method="POST" class="dropdown-item py-2">
-                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
-                      <button type="submit" name="action" value="processing" class="btn btn-link p-0 text-decoration-none text-primary w-100 text-start fw-semibold"><i class="fas fa-gear me-2"></i>Mark as Processing</button>
-                    </form>
-                  </li>
-                  <li>
-                    <form method="POST" class="dropdown-item py-2">
-                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
-                      <button type="submit" name="action" value="ready" class="btn btn-link p-0 text-decoration-none text-warning w-100 text-start fw-semibold"><i class="fas fa-box-archive me-2"></i>Ready for Pickup</button>
-                    </form>
-                  </li>
-                  <li>
-                    <form method="POST" class="dropdown-item py-2">
-                      {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
-                      <button type="submit" name="action" value="release" class="btn btn-link p-0 text-decoration-none text-info w-100 text-start fw-semibold"><i class="fas fa-circle-check me-2"></i>Mark as Released</button>
-                    </form>
-                  </li>
                   <li><hr class="dropdown-divider"></li>
-                  {% else %}
-                  <li><hr class="dropdown-divider"></li>
-                  {% endif %}
                   <li>
                     <form method="POST" class="dropdown-item py-2">
                       {% csrf_token %}<input type="hidden" name="req_id" value="{{ req.id }}">
@@ -674,7 +678,7 @@
   </div>
 </div>
 
-<!-- ================= MODALS CONTAINER (Outside table) ================= -->
+<!-- ================= MODALS CONTAINER ================= -->
 {% for req in requests %}
   <!-- Purpose Modal -->
   <div class="modal fade text-start" id="purposeModal{{ req.id }}" tabindex="-1" aria-labelledby="purposeModalLabel{{ req.id }}" aria-hidden="true">
@@ -694,86 +698,16 @@
             </span>
           </div>
           <div class="mb-3">
+            <span class="text-muted small text-uppercase fw-bold d-block">Student ID</span>
+            <span class="fw-bold text-dark">{{ req.user.profile.student_id|default:"Not Provided" }}</span>
+          </div>
+          <div class="mb-3">
             <span class="text-muted small text-uppercase fw-bold d-block">Document Requested</span>
             <span class="fw-semibold text-primary">{{ req.get_document_type_display }}</span>
           </div>
           <span class="text-muted small text-uppercase fw-bold d-block mb-1">Detailed Purpose</span>
           <div class="bg-light p-3 rounded-3 border text-dark" style="white-space: pre-wrap; word-break: break-word; font-size: 14px; line-height: 1.6;">
             {{ req.purpose }}
-          </div>
-        </div>
-        <div class="modal-footer border-top-0 p-3">
-          <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Student Information Modal -->
-  <div class="modal fade text-start" id="userModal{{ req.id }}" tabindex="-1" aria-labelledby="userModalLabel{{ req.id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header border-bottom-0">
-          <h5 class="modal-title text-white" id="userModalLabel{{ req.id }}"><i class="fas fa-user-graduate me-2"></i>Student Information</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-4">
-          <div class="d-flex align-items-center mb-3 gap-3">
-            <img src="{% if req.user.profile.profile_picture %}{{ req.user.profile.profile_picture.url }}{% else %}about:blank{% endif %}"
-                 alt="Profile Picture"
-                 id="userModalAvatar{{ req.id }}"
-                 style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; {% if not req.user.profile.profile_picture %}display: none;{% endif %} box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
-                 onerror="this.style.display='none'; var fb=document.getElementById('userModalAvatarFallback{{ req.id }}'); if(fb) fb.style.display='flex';">
-            <div id="userModalAvatarFallback{{ req.id }}"
-                 class="bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4"
-                 style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); {% if req.user.profile.profile_picture %}display: none;{% endif %} box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-              {{ req.user.first_name|slice:":1" }}{% if req.user.last_name %}{{ req.user.last_name|slice:":1" }}{% endif %}
-            </div>
-            <div>
-              <h6 class="mb-0 fw-bold fs-5 text-dark">
-                {{ req.user.first_name }}
-                {% if req.user.profile.middle_initial and req.user.profile.middle_initial != 'N/A' %}{{ req.user.profile.get_middle_initial_display }}{% endif %}
-                {{ req.user.last_name }}
-              </h6>
-              <small class="text-muted">Student ID: <strong style="color: var(--text-dark);">{{ req.user.profile.student_id|default:"Not Provided" }}</strong></small>
-            </div>
-          </div>
-          <hr class="my-3 text-muted opacity-25">
-          <div class="row g-3">
-            <div class="col-6">
-              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Email Address</small>
-              <span class="text-dark small fw-semibold">{{ req.user.email }}</span>
-            </div>
-            <div class="col-6">
-              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Phone Number</small>
-              <span class="text-dark small fw-semibold">{{ req.user.profile.phone_number|default:"Not Provided" }}</span>
-            </div>
-            <div class="col-6">
-              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Student Status</small>
-              {% if req.user.profile.student_status %}
-                <span class="badge {% if req.user.profile.student_status == 'student' %}bg-success{% else %}bg-secondary{% endif %}">
-                  {{ req.user.profile.get_student_status_display }}
-                </span>
-              {% else %}
-                <span class="badge bg-secondary">Not Set</span>
-              {% endif %}
-            </div>
-            <div class="col-6">
-              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Academic Year</small>
-              {% if req.user.profile.year %}
-                <span class="badge bg-success">{{ req.user.profile.year }}</span>
-              {% else %}
-                <span class="badge bg-secondary">Not Set</span>
-              {% endif %}
-            </div>
-            <div class="col-12">
-              <small class="text-uppercase text-muted fw-semibold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.03em;">Enrolled Course</small>
-              {% if req.course %}
-                <span class="badge course-badge" data-course="{{ req.course }}">{{ req.course }}</span>
-              {% else %}
-                <span class="badge bg-secondary">N/A</span>
-              {% endif %}
-            </div>
           </div>
         </div>
         <div class="modal-footer border-top-0 p-3">
@@ -806,18 +740,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const filterCourse = document.getElementById('filterCourse');
   const searchInput = document.getElementById('searchInput');
   const table = document.getElementById('adminTable');
-  
-  // Clean row selection query
+
   const rows = Array.from(table.querySelectorAll('tbody tr'));
   const pagination = document.getElementById('pagination');
   const rowsPerPage = 10;
   let currentPage = 1;
   let filteredRows = [];
 
-  if (localStorage.getItem('filterStatus')) filterStatus.value = localStorage.getItem('filterStatus');
-  if (localStorage.getItem('filterPayment')) filterPayment.value = localStorage.getItem('filterPayment');
-  if (localStorage.getItem('filterCourse')) filterCourse.value = localStorage.getItem('filterCourse');
-  if (localStorage.getItem('searchValue')) searchInput.value = localStorage.getItem('searchValue');
+  if (localStorage.getItem('stdFilterStatus')) filterStatus.value = localStorage.getItem('stdFilterStatus');
+  if (localStorage.getItem('stdFilterPayment')) filterPayment.value = localStorage.getItem('stdFilterPayment');
+  if (localStorage.getItem('stdFilterCourse')) filterCourse.value = localStorage.getItem('stdFilterCourse');
+  if (localStorage.getItem('stdSearchValue')) searchInput.value = localStorage.getItem('stdSearchValue');
 
   function applyFilters() {
     const statusValue = filterStatus.value.toLowerCase();
@@ -825,10 +758,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const courseValue = filterCourse.value.toLowerCase();
     const searchValue = searchInput.value.toLowerCase();
 
-    localStorage.setItem('filterStatus', filterStatus.value);
-    localStorage.setItem('filterPayment', filterPayment.value);
-    localStorage.setItem('filterCourse', filterCourse.value);
-    localStorage.setItem('searchValue', searchInput.value);
+    localStorage.setItem('stdFilterStatus', filterStatus.value);
+    localStorage.setItem('stdFilterPayment', filterPayment.value);
+    localStorage.setItem('stdFilterCourse', filterCourse.value);
+    localStorage.setItem('stdSearchValue', searchInput.value);
 
     filteredRows = rows.filter(row => {
       if(row.cells.length <= 1) return false;

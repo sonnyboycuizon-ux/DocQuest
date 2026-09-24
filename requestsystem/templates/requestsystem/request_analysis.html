@@ -2,296 +2,529 @@
 {% load static %}
 
 {% block content %}
-
 <style>
-    /* Fixed Watermark Background Image */
+    /* Fixed Watermark Background */
     body::before {
         content: '';
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 550px;
-        height: 550px;
+        width: 580px;
+        height: 580px;
         background-image: url("{% static 'images/cc.png' %}");
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        opacity: 0.12;
+        opacity: 0.05;
         pointer-events: none;
         z-index: 0;
-    }
-
-    :root {
-        --primary-navy: #1a365d;
-        --primary-gold: #c19a4c;
-        --primary-light: #2d5a87;
-        --bg-light: #f8fafc;
-        --text-dark: #1e293b;
-        --text-muted: #64748b;
-        --border-color: #e2e8f0;
-        --card-bg: #ffffff;
-    }
-
-    body {
-        background-color: var(--bg-light);
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: var(--text-dark);
-        position: relative;
     }
 
     .request-analysis-container {
         position: relative;
         z-index: 1;
-        padding: 1rem 0;
+        padding: 0.5rem 0 2rem 0;
+    }
+
+    /* Executive Header */
+    .analysis-header {
+        background: linear-gradient(135deg, var(--surface-card) 0%, rgba(248, 250, 252, 0.95) 100%);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 1.75rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    .header-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--primary-gold);
+        background: rgba(193, 154, 76, 0.12);
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        margin-bottom: 0.45rem;
     }
 
     .page-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 4px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--primary-navy);
+        margin-bottom: 0.25rem;
     }
 
     .page-subtitle {
-        font-size: 13px;
+        font-size: 0.88rem;
         color: var(--text-muted);
-        margin-bottom: 20px;
-    }
-
-    /* Stats Container - Naka-align sa Left */
-    .stats-grid {
-        display: flex;
-        justify-content: flex-start;
-        margin-bottom: 20px;
-    }
-
-    .stat-card {
-        background: var(--card-bg);
-        border-radius: 12px;
-        padding: 12px 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        text-align: left;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border: 1px solid var(--border-color);
-        max-width: 280px;
-        width: 100%;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-
-    .stat-card .stat-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .stat-card .stat-value {
-        font-size: 24px;
-        font-weight: 800;
+        line-height: 1.45;
         margin: 0;
     }
 
-    .stat-card.total .stat-value { 
-        color: var(--primary-navy); 
+    /* KPI Stats Grid */
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
     }
 
-    /* Chart Card (Lapad para sa dako nga chart) */
-    .chart-card {
-        background: var(--card-bg);
-        border-radius: 14px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        overflow: hidden;
-        max-width: 720px;
-        margin: 0 auto;
+    .kpi-card {
+        background: var(--surface-card);
         border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 1.4rem;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(193, 154, 76, 0.4);
+    }
+
+    .kpi-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .kpi-icon.navy {
+        background: rgba(15, 36, 67, 0.08);
+        color: var(--primary-navy);
+    }
+
+    .kpi-icon.gold {
+        background: rgba(193, 154, 76, 0.12);
+        color: var(--primary-gold);
+    }
+
+    .kpi-icon.emerald {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .kpi-metric-val {
+        font-size: 1.65rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-dark);
+        line-height: 1.1;
+    }
+
+    .kpi-metric-lbl {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+
+    /* Chart Main Container */
+    .chart-card {
+        background: var(--surface-card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
     }
 
     .chart-header {
-        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
-        color: white;
-        padding: 14px 20px;
+        background: linear-gradient(135deg, #091528 0%, #0f2443 100%);
+        color: #ffffff;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
     .chart-header h2 {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 0.65rem;
+        letter-spacing: -0.01em;
+    }
+
+    .chart-header h2 i {
+        color: var(--primary-gold);
     }
 
     .chart-body {
-        padding: 24px;
+        padding: 2rem 1.5rem;
     }
 
-    /* Wrapper Layout */
+    /* 2-Column Responsive Wrapper */
     .chart-wrapper {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 24px;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
         align-items: center;
     }
 
-    /* Canvas styling: Gi-padako ang height ngadto sa 420px */
     .canvas-container {
         position: relative;
-        height: 420px;
+        height: 380px;
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 1rem;
+        background: radial-gradient(circle at center, rgba(15, 36, 67, 0.02) 0%, transparent 70%);
+        border-radius: var(--radius-lg);
     }
 
     #documentChart {
-        max-height: 420px !important;
+        max-height: 360px !important;
+        width: 100% !important;
     }
 
-    /* Legend: Pina-vertical list paubos */
+    /* Executive Legend Styling */
+    .chart-legend-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .legend-panel-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     .chart-legend {
         list-style: none;
         padding: 0;
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        border-top: 1px dashed var(--border-color);
-        padding-top: 18px;
+        gap: 0.65rem;
+        max-height: 380px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+
+    /* Custom scrollbar for legend */
+    .chart-legend::-webkit-scrollbar {
+        width: 5px;
+    }
+    .chart-legend::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
     }
 
     .chart-legend-item {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--border-color);
+        justify-content: space-between;
+        gap: 0.85rem;
+        transition: all 0.2s ease;
     }
 
-    .chart-legend-item:last-child {
-        border-bottom: none;
+    .chart-legend-item:hover {
+        background: #ffffff;
+        border-color: rgba(193, 154, 76, 0.5);
+        box-shadow: 0 4px 12px rgba(15, 36, 67, 0.06);
+        transform: translateX(3px);
+    }
+
+    .legend-item-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
     }
 
     .chart-legend-color {
         width: 14px;
         height: 14px;
-        border-radius: 3px;
+        border-radius: 4px;
         flex-shrink: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
 
     .chart-legend-text {
-        font-size: 13px;
+        font-size: 0.86rem;
         color: var(--text-dark);
-        font-weight: 500;
-        line-height: 1.3;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .legend-item-stats {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .legend-count-pill {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--primary-navy);
+        background: rgba(15, 36, 67, 0.08);
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+    }
+
+    .legend-pct-pill {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--primary-gold);
+        background: rgba(193, 154, 76, 0.12);
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+    }
+
+    @media (max-width: 991px) {
+        .chart-wrapper {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .canvas-container {
+            height: 320px;
+        }
     }
 </style>
 
 <div class="request-analysis-container">
-    <div class="page-title">Request Analysis</div>
-    <div class="page-subtitle">Analyze document request trends and statistics</div>
-
-    <!-- Stats Grid (Naka-align sa Left) -->
-    <div class="stats-grid">
-        <div class="stat-card total">
-            <div class="stat-label">Total Requests</div>
-            <div class="stat-value">{{ total_requests }}</div>
+    
+    <!-- Executive Header -->
+    <div class="analysis-header">
+        <div>
+            <span class="header-eyebrow">
+                <i class="fas fa-chart-line"></i> Institutional Intelligence
+            </span>
+            <h1 class="page-title">Request Volume & Distribution Analysis</h1>
+            <p class="page-subtitle">Examine document frequency distributions, requisition metrics, and demographic trends.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-outline-secondary" style="border-radius: var(--radius-md); font-weight: 600; padding: 0.55rem 1rem;">
+                <i class="fas fa-arrow-left me-1"></i> Return to Registry
+            </a>
         </div>
     </div>
 
-    <!-- Chart Card -->
-    <div class="chart-card">
-        <div class="chart-header">
-            <h2>
-                <i class="fa-solid fa-chart-pie"></i>
-                Most Requested Documents
-            </h2>
+    <!-- KPI Metric Summary Cards -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-icon navy">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <div>
+                <div class="kpi-metric-val">{{ total_requests }}</div>
+                <div class="kpi-metric-lbl">Total Documents Requested</div>
+            </div>
         </div>
-        <div class="chart-body">
-            <div class="chart-wrapper">
-                <!-- Mas Dako nga Circle/Chart Container (420px) -->
-                <div class="canvas-container">
-                    <canvas id="documentChart"></canvas>
-                </div>
-                <!-- Text / Legend sa Ubos (Pina-vertical list) -->
-                <ul id="documentLegend" class="chart-legend"></ul>
+        <div class="kpi-card">
+            <div class="kpi-icon gold">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+                <div id="kpiUniqueTypes" class="kpi-metric-val">0</div>
+                <div class="kpi-metric-lbl">Catalog Categories Active</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon emerald">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div>
+                <div id="kpiTopDoc" class="kpi-metric-val" style="font-size: 1.15rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">Loading...</div>
+                <div class="kpi-metric-lbl">Leading Document Category</div>
             </div>
         </div>
     </div>
+
+    <!-- Chart Analytics Card -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h2>
+                <i class="fas fa-chart-pie"></i>
+                Distribution by Document Classification
+            </h2>
+            <span style="font-size: 0.78rem; opacity: 0.85; letter-spacing: 0.02em;">
+                <i class="fas fa-circle text-success me-1" style="font-size: 0.6rem;"></i> Live Registry Dataset
+            </span>
+        </div>
+        <div class="chart-body">
+            <div class="chart-wrapper">
+                <!-- Doughnut Canvas Container -->
+                <div class="canvas-container">
+                    <canvas id="documentChart"></canvas>
+                </div>
+                
+                <!-- Detailed Legend Breakdown Panel -->
+                <div class="chart-legend-panel">
+                    <div class="legend-panel-title">
+                        <span>Classification Breakdown</span>
+                        <span>Volume & Share</span>
+                    </div>
+                    <ul id="documentLegend" class="chart-legend"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- Chart.js -->
+<!-- Chart.js Engine -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-
     const labels = {{ labels|safe }};
     const data = {{ data|safe }};
-    const total = data.reduce((a,b) => a + b, 0);
+    const total = data.reduce((a, b) => a + b, 0);
 
-    // Update labels: full name + count + percentage
-    const updatedLabels = labels.map((label, index) => {
-        const count = data[index];
-        const percent = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-        return `${label} (${count}) - ${percent}%`;
-    });
+    // Update Unique Types KPI
+    const kpiUnique = document.getElementById('kpiUniqueTypes');
+    if (kpiUnique) {
+        kpiUnique.textContent = labels.length;
+    }
+
+    // Identify Leading Document
+    const kpiTop = document.getElementById('kpiTopDoc');
+    if (kpiTop) {
+        if (data.length > 0) {
+            let maxIndex = 0;
+            for (let i = 1; i < data.length; i++) {
+                if (data[i] > data[maxIndex]) {
+                    maxIndex = i;
+                }
+            }
+            kpiTop.textContent = labels[maxIndex] || 'None';
+            kpiTop.title = labels[maxIndex] || '';
+        } else {
+            kpiTop.textContent = 'None Recorded';
+        }
+    }
+
+    // Curated Executive Color Palette
+    const palette = [
+        "#0f2443", // Navy Deep
+        "#c19a4c", // Gold
+        "#1e3a8a", // Royal Blue
+        "#059669", // Emerald
+        "#7c3aed", // Violet
+        "#d97706", // Amber
+        "#e11d48", // Rose Red
+        "#0891b2", // Cyan
+        "#4338ca", // Indigo
+        "#0d9488", // Teal
+        "#b45309", // Warm Ochre
+        "#64748b"  // Slate
+    ];
 
     const ctx = document.getElementById('documentChart');
 
-    const chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: updatedLabels,
-            datasets: [{
-                data: data,
-                backgroundColor: [
-                    "#1a365d", "#c19a4c", "#2d5a87", "#3b82f6",
-                    "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
-                    "#ec4899", "#06b6d4", "#f97316", "#64748b"
-                ],
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.dataset.data[context.dataIndex];
-                            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                            return `${labels[context.dataIndex]}: ${value} requests (${percent}%)`;
+    if (ctx) {
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: palette.slice(0, data.length),
+                    borderWidth: 3,
+                    borderColor: '#ffffff',
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '62%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#091528',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 10,
+                        boxPadding: 6,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.dataset.data[context.dataIndex];
+                                const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return ` ${value} requests (${percent}%)`;
+                            }
                         }
                     }
                 }
             }
+        });
+
+        // Generate Custom Executive Legend
+        const legendContainer = document.getElementById('documentLegend');
+        if (legendContainer) {
+            legendContainer.innerHTML = '';
+            labels.forEach((label, index) => {
+                const count = data[index] || 0;
+                const percent = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
+                const color = palette[index % palette.length];
+
+                const li = document.createElement('li');
+                li.className = 'chart-legend-item';
+                li.innerHTML = `
+                    <div class="legend-item-left">
+                        <span class="chart-legend-color" style="background-color: ${color};"></span>
+                        <span class="chart-legend-text" title="${label}">${label}</span>
+                    </div>
+                    <div class="legend-item-stats">
+                        <span class="legend-count-pill">${count} req</span>
+                        <span class="legend-pct-pill">${percent}%</span>
+                    </div>
+                `;
+                legendContainer.appendChild(li);
+            });
+
+            if (labels.length === 0) {
+                legendContainer.innerHTML = `
+                    <li style="text-align: center; color: var(--text-muted); padding: 2rem 0;">
+                        No document request records currently available.
+                    </li>
+                `;
+            }
         }
-    });
-
-    // Generate custom legend sa ubos
-    const legendContainer = document.getElementById('documentLegend');
-    chart.data.labels.forEach((label, index) => {
-        const li = document.createElement('li');
-        li.className = 'chart-legend-item';
-        li.innerHTML = `
-            <span class="chart-legend-color" style="background-color:${chart.data.datasets[0].backgroundColor[index]};"></span>
-            <span class="chart-legend-text">${label}</span>
-        `;
-        legendContainer.appendChild(li);
-    });
-
+    }
 });
 </script>
-
 {% endblock %}

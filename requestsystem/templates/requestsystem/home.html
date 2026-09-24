@@ -2,46 +2,120 @@
 {% load static %}
 {% block content %}
 <style>
-  .home-container {
+  .home-wrapper {
+    min-height: calc(100vh - 120px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 70vh;
+    padding: 30px 16px;
+    position: relative;
+  }
+
+  .home-hero-card {
+    background: #ffffff;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    max-width: 760px;
+    width: 100%;
+    padding: 56px 40px 48px;
     text-align: center;
-    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .home-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-light) 50%, var(--primary-gold) 100%);
+  }
+
+  .home-hero-card::after {
+    content: '';
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(193, 154, 76, 0.08) 0%, transparent 70%);
+    top: -120px;
+    right: -100px;
+    pointer-events: none;
+  }
+
+  .home-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 36, 67, 0.06);
+    border: 1px solid rgba(15, 36, 67, 0.12);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--primary-navy);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .home-badge i {
+    color: var(--primary-gold);
+  }
+
+  .home-logo-container {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 26px;
   }
 
   .home-logo {
-    width: 120px;
-    height: 120px;
-    background: white;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
-    box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+    box-shadow: var(--shadow-md), 0 0 0 4px rgba(193, 154, 76, 0.25), 0 0 0 10px rgba(15, 36, 67, 0.04);
+    padding: 14px;
+    transition: transform 0.35s ease;
+  }
+
+  .home-logo:hover {
+    transform: scale(1.05) rotate(2deg);
   }
 
   .home-logo img {
-    max-width: 80px;
-    max-height: 80px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
   }
 
   .home-title {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 800;
     color: var(--text-dark);
     margin-bottom: 12px;
+    letter-spacing: -0.025em;
+  }
+
+  .home-title span {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 60%, var(--primary-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .home-subtitle {
-    font-size: 16px;
-    color: #64748b;
-    margin-bottom: 36px;
-    max-width: 400px;
-    line-height: 1.6;
+    font-size: 15.5px;
+    color: var(--text-muted);
+    margin: 0 auto 36px;
+    max-width: 520px;
+    line-height: 1.65;
   }
 
   .home-buttons {
@@ -49,50 +123,157 @@
     gap: 16px;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 40px;
   }
 
   .home-btn {
-    padding: 12px 32px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
+    padding: 13px 34px;
+    border-radius: var(--radius-sm);
+    font-size: 14.5px;
+    font-weight: 600;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .home-btn-primary {
-    background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
     color: white;
+    box-shadow: 0 4px 16px rgba(15, 36, 67, 0.25);
   }
 
   .home-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.3);
+    box-shadow: 0 8px 24px rgba(15, 36, 67, 0.35);
+    color: white;
   }
 
   .home-btn-secondary {
-    background: white;
+    background: #ffffff;
     color: var(--primary-navy);
-    border: 2px solid #e2e8f0;
+    border: 1.5px solid var(--border-color);
+    box-shadow: var(--shadow-xs);
   }
 
   .home-btn-secondary:hover {
     border-color: var(--primary-navy);
+    background: #f8fafc;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
+    box-shadow: var(--shadow-sm);
+    color: var(--primary-navy);
+  }
+
+  /* Highlight Feature Grid */
+  .home-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 32px;
+    text-align: left;
+  }
+
+  @media (max-width: 640px) {
+    .home-features {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .home-hero-card {
+      padding: 36px 20px 28px;
+    }
+
+    .home-title {
+      font-size: 26px;
+    }
+  }
+
+  .feature-item {
+    padding: 12px;
+  }
+
+  .feature-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: var(--primary-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .feature-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+
+  .feature-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
   }
 </style>
 
-<div class="home-container">
-  <div class="home-logo">
-    <img src="{% static 'images/cc.png' %}" alt="School Logo">
-  </div>
-  <h1 class="home-title">Welcome to DocQuest</h1>
-  <p class="home-subtitle">Your school's official document request system. Request, track, and receive your documents with ease.</p>
-  <div class="home-buttons">
-    <a href="{% url 'login' %}" class="home-btn home-btn-primary">Login</a>
-    <a href="{% url 'register' %}" class="home-btn home-btn-secondary">Register</a>
+<div class="home-wrapper">
+  <div class="home-hero-card">
+    <div class="home-badge">
+      <i class="fas fa-graduation-cap"></i> School Registrar Office Portal
+    </div>
+
+    <div class="home-logo-container">
+      <div class="home-logo">
+        <img src="{% static 'images/cc.png' %}" alt="School Seal">
+      </div>
+    </div>
+
+    <h1 class="home-title">Welcome to <span>DocQuest</span></h1>
+    <p class="home-subtitle">
+      The official registrar document request and fulfillment system. Effortlessly submit requests, track progress in
+      real time, and receive your credentials.
+    </p>
+
+    <div class="home-buttons">
+      <a href="{% url 'login' %}" class="home-btn home-btn-primary">
+        <i class="fas fa-sign-in-alt"></i> Login to Portal
+      </a>
+      <a href="{% url 'register' %}" class="home-btn home-btn-secondary">
+        <i class="fas fa-user-plus"></i> Register Student Account
+      </a>
+    </div>
+
+    <div class="home-features">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="feature-title">Fast Processing</div>
+        <p class="feature-desc">Streamlined registrar review for transcripts, certificates, and TOR.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #fef3c7; color: #92400e;">
+          <i class="fas fa-clock-rotate-left"></i>
+        </div>
+        <div class="feature-title">Live Tracking</div>
+        <p class="feature-desc">Instant timeline updates from submission to ready for release.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #ecfdf5; color: #065f46;">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="feature-title">Verified & Secure</div>
+        <p class="feature-desc">Official verification ensuring accurate and tamper-proof records.</p>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

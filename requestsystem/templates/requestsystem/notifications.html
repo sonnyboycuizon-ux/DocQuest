@@ -2,121 +2,316 @@
 {% load static %}
 {% block content %}
 <style>
-  .page-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 30px;
+  .notifications-container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------- Page header ---------- */
+  .notif-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
   }
 
-  .notification-box {
+  .notif-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .notif-heading-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+  }
+
+  .notif-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+  }
+
+  .notif-subtitle {
+    margin: 2px 0 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  /* ---------- Filter chips ---------- */
+  .notif-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .notif-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: white;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .notif-filter:hover {
+    border-color: var(--primary-light);
+    color: var(--primary-navy);
+  }
+
+  .notif-filter.active {
+    background: var(--primary-navy);
+    border-color: var(--primary-navy);
+    color: white;
+    box-shadow: 0 2px 8px rgba(15, 36, 67, 0.2);
+  }
+
+  .notif-filter .count {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.2);
+    color: inherit;
+  }
+
+  .notif-filter.active .count {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+  }
+
+  /* ---------- Timeline ---------- */
+  .notif-timeline {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-width: 700px;
-    margin: 0 auto;
+    gap: 14px;
   }
 
-  .notification-item {
+  .notif-item {
+    position: relative;
     display: flex;
-    align-items: flex-start;
-    padding: 20px;
-    border-radius: 16px;
+    align-items: stretch;
+    gap: 16px;
+    padding: 20px 22px;
+    border-radius: var(--radius-md);
     background: white;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
-  .notification-item:hover {
+  .notif-item:hover {
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
 
-  .notification-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
+  .notif-item::before {
+    content: "";
+    width: 4px;
+    border-radius: 4px;
+    align-self: stretch;
+    background: var(--accent, #94a3b8);
+    flex-shrink: 0;
+  }
+
+  .notif-item[data-status="approved"] { --accent: #10b981; }
+  .notif-item[data-status="processing"] { --accent: #3b82f6; }
+  .notif-item[data-status="ready"] { --accent: #14b8a6; }
+  .notif-item[data-status="released"] { --accent: #6366f1; }
+  .notif-item[data-status="pending"] { --accent: #f59e0b; }
+  .notif-item[data-status="rejected"] { --accent: #ef4444; }
+
+  .notif-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 20px;
-    margin-right: 18px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  }
-
-  .doc-icon { background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); }
-  .approved-icon { background: linear-gradient(135deg, #10b981, #059669); }
-  .released-icon { background: linear-gradient(135deg, #64748b, #475569); }
-  .processing-icon { background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); }
-  .ready-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
-  .pending-icon { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e293b; }
-  .rejected-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
-
-  .notification-text {
-    flex: 1;
-    font-size: 15px;
-    color: #475569;
-  }
-
-  .notification-text strong {
-    color: var(--text-dark);
-    font-weight: 700;
     font-size: 16px;
+    flex-shrink: 0;
   }
 
-  .notification-time {
-    font-size: 13px;
-    color: #94a3b8;
-    margin-top: 8px;
+  .approved-icon { background: linear-gradient(135deg, #10b981, #059669); }
+  .released-icon { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  .processing-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+  .ready-icon { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+  .pending-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .rejected-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .doc-icon { background: linear-gradient(135deg, var(--primary-navy), var(--primary-light)); }
+
+  .notif-body {
+    flex: 1;
+    min-width: 0;
   }
 
-  .status-message {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 10px;
-    display: inline-block;
+  .notif-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
-  .status-message.approved { background-color: #d1fae5; color: #065f46; }
-  .status-message.processing { background-color: #dbeafe; color: #1e40af; }
-  .status-message.ready { background-color: #fed7aa; color: #92400e; }
-  .status-message.released { background-color: #e2e8f0; color: #475569; }
-  .status-message.pending { background-color: #fef3c7; color: #92400e; }
-  .status-message.rejected { background-color: #fee2e2; color: #991b1b; }
-
-  .badge-status {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-left: 10px;
+  .notif-doctype {
+    font-size: 15px;
     font-weight: 700;
+    color: var(--text-dark);
   }
 
-  .badge-status.pending { background: #fbbf24; color: #1e293b; }
-  .badge-status.approved { background: #10b981; color: white; }
-  .badge-status.processing { background: var(--primary-navy); color: white; }
-  .badge-status.ready { background: #f59e0b; color: white; }
-  .badge-status.released { background: #64748b; color: white; }
-  .badge-status.rejected { background: #ef4444; color: white; }
+  .notif-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .notif-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-top: 6px;
+  }
+
+  .notif-badge.approved { background-color: #d1fae5; color: #065f46; }
+  .notif-badge.processing { background-color: #dbeafe; color: #1e40af; }
+  .notif-badge.ready { background-color: #ccfbf1; color: #0f766e; }
+  .notif-badge.released { background-color: #e0e7ff; color: #3730a3; }
+  .notif-badge.pending { background-color: #fef3c7; color: #92400e; }
+  .notif-badge.rejected { background-color: #fee2e2; color: #991b1b; }
+
+  .notif-message {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text-dark);
+  }
+
+  /* ---------- Empty state ---------- */
+  .notif-empty {
+    max-width: 440px;
+    margin: 50px auto;
+    text-align: center;
+    padding: 48px 30px;
+    border-radius: var(--radius-lg);
+    background: white;
+    border: 1.5px dashed var(--border-color);
+  }
+
+  .notif-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #94a3b8;
+  }
+
+  .notif-empty h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0 0 6px;
+  }
+
+  .notif-empty p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ---------- No results (after filtering) ---------- */
+  .notif-no-match {
+    display: none;
+    text-align: center;
+    padding: 36px;
+    color: var(--text-muted);
+    font-size: 14px;
+    background: white;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+  }
+
+  @media (max-width: 576px) {
+    .notif-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .notif-item {
+      padding: 16px;
+      gap: 12px;
+    }
+    .notif-icon {
+      width: 38px;
+      height: 38px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+  }
 </style>
 
-<div class="container">
-  <div class="page-title">
-    <i class="fa-solid fa-bell"></i> Notifications
+<div class="container notifications-container">
+
+  <div class="notif-header">
+    <div class="notif-heading">
+      <span class="notif-heading-icon"><i class="fa-solid fa-bell"></i></span>
+      <div>
+        <h1 class="notif-title">Notifications</h1>
+        <p class="notif-subtitle">Track the latest updates on your document requests</p>
+      </div>
+    </div>
+
+    {% if requests %}
+    <div class="notif-filters" id="notifFilters">
+      <span class="notif-filter active" data-filter="all">All <span class="count">{{ requests|length }}</span></span>
+      <span class="notif-filter" data-filter="pending">Pending</span>
+      <span class="notif-filter" data-filter="processing">Processing</span>
+      <span class="notif-filter" data-filter="ready">Ready</span>
+      <span class="notif-filter" data-filter="approved">Approved</span>
+      <span class="notif-filter" data-filter="released">Released</span>
+      <span class="notif-filter" data-filter="rejected">Rejected</span>
+    </div>
+    {% endif %}
   </div>
 
-  <div class="notification-box">
-    {% if requests %}
+  {% if requests %}
+    <div class="notif-timeline" id="notifTimeline">
       {% for request in requests %}
-        <div class="notification-item">
-          <div class="notification-icon 
+        <div class="notif-item" data-status="{{ request.status|lower }}">
+          <div class="notif-icon
               {% if request.status == 'APPROVED' %}approved-icon
               {% elif request.status == 'PROCESSING' %}processing-icon
               {% elif request.status == 'READY' %}ready-icon
@@ -126,59 +321,75 @@
               {% else %}doc-icon{% endif %}">
             {% if request.status == 'APPROVED' %}<i class="fa-solid fa-check"></i>
             {% elif request.status == 'PROCESSING' %}<i class="fa-solid fa-gear"></i>
-            {% elif request.status == 'READY' %}<i class="fa-solid fa-box-seam"></i>
-            {% elif request.status == 'RELEASED' %}<i class="fa-solid fa-box-open"></i>
-            {% elif request.status == 'PENDING' %}<i class="fa-solid fa-hourglass-half"></i>
+            {% elif request.status == 'READY' %}<i class="fa-solid fa-box-archive"></i>
+            {% elif request.status == 'RELEASED' %}<i class="fa-solid fa-circle-check"></i>
+            {% elif request.status == 'PENDING' %}<i class="fa-solid fa-clock"></i>
             {% elif request.status == 'REJECTED' %}<i class="fa-solid fa-xmark"></i>
             {% else %}<i class="fa-solid fa-file"></i>{% endif %}
           </div>
 
-          <div class="notification-text">
-            <strong>{{ request.get_document_type_display }}</strong>
-            <span class="badge-status {{ request.status|lower }}">
-              {{ request.status|title }}
-            </span>
-            <br>
+          <div class="notif-body">
+            <div class="notif-row">
+              <span class="notif-doctype">{{ request.get_document_type_display }}</span>
+              <span class="notif-time">{{ request.date_requested|date:"M d, Y \a\t h:i A" }}</span>
+            </div>
+
+            <span class="notif-badge {{ request.status|lower }}">{{ request.status|title }}</span>
 
             {% if request.status == "APPROVED" %}
-              <div class="status-message approved">
-                The request has been accepted.
-              </div>
+              <div class="notif-message">Your document request has been reviewed and officially approved by the Registrar Office.</div>
             {% elif request.status == "PROCESSING" %}
-              <div class="status-message processing">
-                Staff are preparing the document.
-              </div>
+              <div class="notif-message">Registrar staff are currently preparing and validating your document credentials.</div>
             {% elif request.status == "READY" %}
-              <div class="status-message ready">
-                Your document is ready for collection! Please head to the Registrar Office.
-              </div>
+              <div class="notif-message">Your document is ready for claiming at the Registrar Office during office hours.</div>
             {% elif request.status == "RELEASED" %}
-              <div class="status-message released">
-                The student has received the document.
-              </div>
+              <div class="notif-message">This document has been successfully released and claimed.</div>
             {% elif request.status == "PENDING" %}
-              <div class="status-message pending">
-                Your document request is pending.
-              </div>
+              <div class="notif-message">Your request has been submitted and is in queue for registrar evaluation.</div>
             {% elif request.status == "REJECTED" %}
-              <div class="status-message rejected">
-                The request was denied.
-              </div>
+              <div class="notif-message">This request could not be processed. Please contact the Registrar Office for assistance.</div>
             {% endif %}
-
-            <div class="notification-time">
-              {{ request.date_requested|date:"M d, Y h:i A" }}
-            </div>
           </div>
         </div>
       {% endfor %}
-    {% else %}
-      <div class="notification-item">
-        <div class="notification-text" style="text-align:center; padding:20px;">
-          No document notifications yet.
-        </div>
-      </div>
-    {% endif %}
-  </div>
+
+      <div class="notif-no-match" id="notifNoMatch">No notifications match this filter.</div>
+    </div>
+  {% else %}
+    <div class="notif-empty">
+      <div class="notif-empty-icon"><i class="fa-solid fa-inbox"></i></div>
+      <h3>All caught up</h3>
+      <p>Status updates on your document requests will appear here as they progress.</p>
+    </div>
+  {% endif %}
+
 </div>
+
+{% if requests %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var filters = document.querySelectorAll('#notifFilters .notif-filter');
+    var items = document.querySelectorAll('#notifTimeline .notif-item');
+    var noMatch = document.getElementById('notifNoMatch');
+
+    filters.forEach(function (filter) {
+      filter.addEventListener('click', function () {
+        filters.forEach(function (f) { f.classList.remove('active'); });
+        filter.classList.add('active');
+
+        var target = filter.getAttribute('data-filter');
+        var visibleCount = 0;
+
+        items.forEach(function (item) {
+          var match = target === 'all' || item.getAttribute('data-status') === target;
+          item.style.display = match ? 'flex' : 'none';
+          if (match) visibleCount++;
+        });
+
+        noMatch.style.display = visibleCount === 0 ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}

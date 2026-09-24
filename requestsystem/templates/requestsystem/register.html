@@ -1,84 +1,225 @@
 {% extends 'requestsystem/base.html' %}
 {% load static %}
+
+{% block sidebar_elements %}{% endblock %}
+{% block sidebar_nav %}{% endblock %}
+{% block sidebar_script %}{% endblock %}
+
 {% block content %}
 <style>
-  body {
-    background: linear-gradient(135deg, var(--bg-light) 0%, #e2e8f0 100%);
-    min-height: 100vh;
+  .main-content {
+    padding: 0 !important;
+    margin-left: 0 !important;
   }
- 
+
+  .main-content .container-fluid {
+    padding: 0 !important;
+  }
+
+  body {
+    background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #0f2443 60%, #07101f 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+
   .register-container {
-    max-width: 620px;
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 20px 16px;
-    min-height: calc(100vh - 40px);
+    padding: 40px 18px;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
   }
 
   .register-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(26, 54, 93, 0.15);
+    background: #ffffff;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
     overflow: hidden;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: registerFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .register-header {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, #0f2443 100%);
+  @keyframes registerFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== Left branding panel ===== */
+  .register-aside {
+    background: linear-gradient(180deg, #091528 0%, #0d1e38 60%, #07101f 100%);
     color: white;
-    padding: 32px 24px;
-    text-align: center;
+    width: 340px;
+    flex-shrink: 0;
+    padding: 48px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-right: 2px solid rgba(193, 154, 76, 0.25);
+  }
+
+  .register-aside::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(193, 154, 76, 0.16) 0%, transparent 70%);
+    top: -80px;
+    right: -80px;
+    pointer-events: none;
+  }
+
+  .register-aside::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    bottom: -60px;
+    left: -60px;
+    pointer-events: none;
   }
 
   .register-logo {
-    width: 75px;
-    height: 75px;
+    width: 78px;
+    height: 78px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(193, 154, 76, 0.45);
+    position: relative;
+    z-index: 1;
+    padding: 8px;
   }
 
   .register-logo img {
-    max-width: 52px;
-    max-height: 52px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
   }
 
   .register-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 6px;
-    line-height: 1.3;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    line-height: 1.25;
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
   }
 
   .register-subtitle {
-    font-size: 13px;
-    opacity: 0.92;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.75);
     font-weight: 400;
-    line-height: 1.5;
-    margin: 0;
+    line-height: 1.6;
+    margin: 0 0 32px;
+    position: relative;
+    z-index: 1;
   }
 
+  .register-highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .register-highlights li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+
+  .register-highlights .hl-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(193, 154, 76, 0.18);
+    border: 1px solid rgba(193, 154, 76, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-gold-light);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* ===== Right form panel ===== */
   .register-body {
-    padding: 28px 24px;
+    padding: 40px 48px;
+    flex: 1;
+    min-width: 0;
+    background: #ffffff;
+  }
+
+  .register-body-heading {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+
+  .register-body-sub {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin: 0 0 22px;
   }
 
   .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .form-group label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-dark);
     display: block;
     margin-bottom: 6px;
-    line-height: 1.4;
+    line-height: 1.3;
   }
 
   .form-group input,
@@ -86,51 +227,95 @@
     width: 100%;
     min-height: 48px;
     height: 48px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
     background: #f8fafc;
-    padding: 0 14px;
+    padding: 0 16px;
     font-size: 14px;
-    transition: all 0.3s ease;
+    color: var(--text-dark);
+    transition: all 0.2s ease;
     box-sizing: border-box;
     -webkit-appearance: none;
     appearance: none;
   }
 
   .form-group select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231a365d' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230f2443' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 16px center;
     padding-right: 40px;
   }
 
+  .form-group input:hover,
+  .form-group select:hover {
+    border-color: #cbd5e1;
+  }
+
   .form-group input:focus,
   .form-group select:focus {
     outline: none;
-    border-color: var(--primary-navy);
-    box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.08);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
     background-color: #fff;
+  }
+
+  /* ===== Password field with toggle eye ===== */
+  .password-field {
+    position: relative;
+  }
+
+  .password-field input {
+    padding-right: 48px;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.2s ease, background 0.2s ease;
+    font-size: 15px;
+  }
+
+  .password-toggle:hover {
+    color: var(--primary-navy);
+    background: rgba(15, 36, 67, 0.06);
+  }
+
+  .password-toggle:focus {
+    outline: none;
   }
 
   .btn-primary {
     background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
     border: none;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     padding: 14px 20px;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     width: 100%;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.2);
-    margin-top: 8px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(15, 36, 67, 0.25);
+    margin-top: 10px;
     color: white;
-    min-height: 48px;
+    min-height: 50px;
     cursor: pointer;
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(15, 36, 67, 0.35);
+    color: white;
   }
 
   .btn-primary:active {
@@ -141,9 +326,9 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin: 16px 0;
+    margin: 16px 0 10px;
     font-size: 13px;
-    color: var(--text-dark);
+    color: var(--text-muted);
     line-height: 1.5;
   }
 
@@ -164,9 +349,11 @@
   .login-link {
     margin-top: 20px;
     text-align: center;
-    font-size: 14px;
-    color: var(--text-dark);
+    font-size: 13.5px;
+    color: var(--text-muted);
     line-height: 1.6;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
   }
 
   .login-link a {
@@ -177,21 +364,23 @@
   }
 
   .login-link a:hover {
-    color: var(--primary-gold);
+    color: var(--primary-gold-dark);
     text-decoration: underline;
   }
 
   .alert {
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     border: none;
     margin-bottom: 18px;
-    padding: 14px 16px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    font-weight: 500;
   }
 
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 12px 18px;
   }
 
   .full {
@@ -199,306 +388,211 @@
   }
 
   .text-danger {
-    color: #dc3545;
+    color: #ef4444;
     font-size: 12px;
     margin-top: 4px;
     line-height: 1.4;
     display: block;
+    font-weight: 500;
   }
 
-  @media (min-width: 768px) {
-    .register-container {
-      max-width: 640px;
-      padding: 30px 20px;
+  .back-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 18px;
+    transition: color 0.2s;
+  }
+
+  .back-home-link:hover {
+    color: white;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 860px) {
+    .register-card {
+      flex-direction: column;
     }
 
-    .register-header {
-      padding: 40px 36px;
+    .register-aside {
+      width: 100%;
+      padding: 34px 28px;
+      text-align: center;
+      border-right: none;
+      border-bottom: 2px solid rgba(193, 154, 76, 0.25);
     }
 
     .register-logo {
-      width: 85px;
-      height: 85px;
+      margin: 0 auto 16px;
     }
 
-    .register-logo img {
-      max-width: 60px;
-      max-height: 60px;
-    }
-
-    .register-title {
-      font-size: 24px;
-    }
-
-    .register-subtitle {
-      font-size: 14px;
+    .register-highlights {
+      display: none;
     }
 
     .register-body {
-      padding: 36px 40px;
-    }
-
-    .form-group input,
-    .form-group select {
-      height: 50px;
-      font-size: 14px;
-    }
-
-    .btn-primary {
-      font-size: 16px;
-      padding: 15px 20px;
+      padding: 32px 24px;
     }
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 600px) {
     .form-grid {
       grid-template-columns: 1fr;
-      gap: 12px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .register-container {
-      padding: 12px 12px;
-      min-height: calc(100vh - 24px);
+      gap: 10px;
     }
 
-    .register-card {
-      border-radius: 16px;
-    }
-
-    .register-header {
+    .register-body {
       padding: 24px 18px;
-    }
-
-    .register-logo {
-      width: 65px;
-      height: 65px;
-      margin-bottom: 12px;
-    }
-
-    .register-logo img {
-      max-width: 44px;
-      max-height: 44px;
-    }
-
-    .register-title {
-      font-size: 18px;
-    }
-
-    .register-subtitle {
-      font-size: 12px;
-    }
-
-    .register-body {
-      padding: 22px 18px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      font-size: 13px;
-      margin-bottom: 5px;
-    }
-
-    .form-group input,
-    .form-group select {
-      height: 46px;
-      min-height: 46px;
-      font-size: 14px;
-      padding: 0 12px;
-      border-radius: 10px;
-    }
-
-    .form-group select {
-      padding-right: 36px;
-      background-position: right 12px center;
-    }
-
-    .btn-primary {
-      padding: 12px 16px;
-      font-size: 15px;
-      min-height: 46px;
-      border-radius: 10px;
-    }
-
-    .checkbox-group {
-      font-size: 12px;
-      gap: 8px;
-      margin: 14px 0;
-    }
-
-    .checkbox-group input {
-      width: 16px;
-      height: 16px;
-    }
-
-    .login-link {
-      font-size: 13px;
-      margin-top: 16px;
-    }
-
-    .alert {
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .register-container {
-      padding: 8px 8px;
-      min-height: calc(100vh - 16px);
-    }
-
-    .register-header {
-      padding: 20px 14px;
-    }
-
-    .register-logo {
-      width: 58px;
-      height: 58px;
-    }
-
-    .register-logo img {
-      max-width: 38px;
-      max-height: 38px;
-    }
-
-    .register-title {
-      font-size: 17px;
-    }
-
-    .register-body {
-      padding: 18px 14px;
-    }
-
-    .form-group input,
-    .form-group select {
-      height: 44px;
-      min-height: 44px;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      font-size: 14px;
-      min-height: 44px;
-      padding: 11px 14px;
-    }
-  }
-
-  @supports (padding: max(0px)) {
-    .register-container {
-      padding-left: max(16px, env(safe-area-inset-left));
-      padding-right: max(16px, env(safe-area-inset-right));
-      padding-top: max(20px, env(safe-area-inset-top));
-      padding-bottom: max(20px, env(safe-area-inset-bottom));
-    }
-
-    @media (max-width: 480px) {
-      .register-container {
-        padding-left: max(12px, env(safe-area-inset-left));
-        padding-right: max(12px, env(safe-area-inset-right));
-        padding-top: max(12px, env(safe-area-inset-top));
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
-      }
     }
   }
 </style>
 
 <div class="register-container">
   <div class="register-card">
-    <div class="register-header">
-      <div class="register-logo">
-        <img src="{% static 'images/cc.png' %}" alt="School Logo">
-      </div>
-      <h1 class="register-title">Create Your Account</h1>
-      <p class="register-subtitle">Join DocQuest for easy document requests</p>
-    </div>
 
+    <!-- Left branding panel -->
+    <aside class="register-aside">
+      <div class="register-logo">
+        <img src="{% static 'images/cc.png' %}" alt="School Seal">
+      </div>
+      <h1 class="register-title">Create Your Student Account</h1>
+      <p class="register-subtitle">Join DocQuest for an official, paperless document request experience.</p>
+
+      <ul class="register-highlights">
+        <li>
+          <span class="hl-icon"><i class="fas fa-bolt"></i></span>
+          Submit requests online in seconds
+        </li>
+        <li>
+          <span class="hl-icon"><i class="fas fa-bell"></i></span>
+          Track real-time registrar status
+        </li>
+        <li>
+          <span class="hl-icon"><i class="fas fa-shield-halved"></i></span>
+          Verified student credentials
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Right form panel -->
     <div class="register-body">
+      <h2 class="register-body-heading">Student Registration</h2>
+      <p class="register-body-sub">Please fill in your authentic student details below.</p>
+
       {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
       {% endif %}
 
       <form method="POST">
         {% csrf_token %}
         {{ form.face_image }}
-        
+
         <div class="form-grid">
-            <div class="form-group full">
-                <label for="{{ form.username.id_for_label }}">Username</label>
-                {{ form.username }}
-                {% if form.username.errors %}<div class="text-danger">{{ form.username.errors.0 }}</div>{% endif %}
-            </div>
+          <div class="form-group full">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="text-danger">{{ form.username.errors.0 }}</div>{% endif %}
+          </div>
 
-            <!-- First Name Field -->
-            <div class="form-group">
-                <label for="{{ form.first_name.id_for_label }}">First Name</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}<div class="text-danger">{{ form.first_name.errors.0 }}</div>{% endif %}
-            </div>
+          <!-- First Name Field -->
+          <div class="form-group">
+            <label for="{{ form.first_name.id_for_label }}">First Name</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="text-danger">{{ form.first_name.errors.0 }}</div>{% endif %}
+          </div>
 
-            <!-- Last Name Field -->
-            <div class="form-group">
-                <label for="{{ form.last_name.id_for_label }}">Last Name</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}<div class="text-danger">{{ form.last_name.errors.0 }}</div>{% endif %}
-            </div>
+          <!-- Last Name Field -->
+          <div class="form-group">
+            <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="text-danger">{{ form.last_name.errors.0 }}</div>{% endif %}
+          </div>
 
-            <div class="form-group full">
-                <label for="{{ form.email.id_for_label }}">Email Address</label>
-                {{ form.email }}
-                {% if form.email.errors %}<div class="text-danger">{{ form.email.errors.0 }}</div>{% endif %}
-            </div>
+          <div class="form-group full">
+            <label for="{{ form.email.id_for_label }}">Email Address</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
 
-            <div class="form-group">
-                <label for="{{ form.student_id.id_for_label }}">Student ID</label>
-                {{ form.student_id }}
-                {% if form.student_id.errors %}<div class="text-danger">{{ form.student_id.errors.0 }}</div>{% endif %}
-            </div>
+          <div class="form-group">
+            <label for="{{ form.student_id.id_for_label }}">Student ID Number</label>
+            {{ form.student_id }}
+            {% if form.student_id.errors %}<div class="text-danger">{{ form.student_id.errors.0 }}</div>{% endif %}
+          </div>
 
-            <div class="form-group">
-                <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                {{ form.phone_number }}
-                {% if form.phone_number.errors %}<div class="text-danger">{{ form.phone_number.errors.0 }}</div>{% endif %}
-            </div>
+          <div class="form-group">
+            <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}<div class="text-danger">{{ form.phone_number.errors.0 }}</div>{% endif %}
+          </div>
 
-            <div class="form-group">
-                <label for="{{ form.password1.id_for_label }}">Password</label>
-                {{ form.password1 }}
-                {% if form.password1.errors %}<div class="text-danger">{{ form.password1.errors.0 }}</div>{% endif %}
+          <div class="form-group">
+            <label for="{{ form.password1.id_for_label }}">Password</label>
+            <div class="password-field">
+              {{ form.password1 }}
+              <button type="button" class="password-toggle" data-target="{{ form.password1.id_for_label }}"
+                aria-label="Show password">
+                <i class="fas fa-eye"></i>
+              </button>
             </div>
+            {% if form.password1.errors %}<div class="text-danger">{{ form.password1.errors.0 }}</div>{% endif %}
+          </div>
 
-            <div class="form-group">
-                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
-                {{ form.password2 }}
-                {% if form.password2.errors %}<div class="text-danger">{{ form.password2.errors.0 }}</div>{% endif %}
+          <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+            <div class="password-field">
+              {{ form.password2 }}
+              <button type="button" class="password-toggle" data-target="{{ form.password2.id_for_label }}"
+                aria-label="Show password">
+                <i class="fas fa-eye"></i>
+              </button>
             </div>
+            {% if form.password2.errors %}<div class="text-danger">{{ form.password2.errors.0 }}</div>{% endif %}
+          </div>
         </div>
 
         <div class="checkbox-group">
           <input type="checkbox" id="terms" required>
-          <label for="terms">I confirm that documents will be accessed only for school-related matters.</label>
+          <label for="terms">I confirm that all provided details are accurate and documents will be requested only for
+            official purposes.</label>
         </div>
 
         <button type="submit" class="btn-primary">
-          <i class="fas fa-user-plus me-2"></i> Create Account
+          <i class="fas fa-user-plus me-2"></i> Register Account
         </button>
       </form>
 
       <div class="login-link">
-        Already have an account? <a href="{% url 'login' %}">Sign In</a>
+        Already have a student account? <a href="{% url 'login' %}">Sign In to Portal</a>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelectorAll('.password-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const targetId = btn.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      if (!input) return;
+
+      const icon = btn.querySelector('i');
+      const isHidden = input.type === 'password';
+
+      input.type = isHidden ? 'text' : 'password';
+      icon.classList.toggle('fa-eye', !isHidden);
+      icon.classList.toggle('fa-eye-slash', isHidden);
+      btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+  });
+</script>
 {% endblock %}

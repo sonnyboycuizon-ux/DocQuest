@@ -2,49 +2,65 @@
 {% load static %}
 {% block content %}
 <style>
-  body::before {
-    content: '';
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 350px;
-    height: 350px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.15;
-    pointer-events: none;
-    z-index: 0;
+  :root {
+    --pp-border: #e2e8f0;
+    --pp-border-soft: #f1f5f9;
+    --pp-muted: #64748b;
+    --pp-label: #334155;
+    --pp-radius: 20px;
+  }
+
+  .profile-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    position: relative;
+    z-index: 1;
   }
 
   .page-title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     color: var(--text-dark);
-    margin-bottom: 30px;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
   }
 
   .profile-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    background: #ffffff;
+    border-radius: var(--pp-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
-    max-width: 550px;
-    margin: 0 auto;
   }
 
+  /* ---------- Header ---------- */
   .profile-header {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
-    padding: 35px 30px;
+    position: relative;
+    background: linear-gradient(135deg, #091528 0%, #0f2443 55%, #1e3a8a 100%);
+    padding: 40px 30px 32px;
     text-align: center;
     color: white;
+    overflow: hidden;
+    border-bottom: 2px solid rgba(193, 154, 76, 0.3);
   }
 
-  /* Avatar Wrapper & Floating Upload Button */
+  .profile-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(193, 154, 76, 0.15) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.15) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
   .avatar-container {
     position: relative;
-    width: 90px;
-    height: 90px;
-    margin: 0 auto 15px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    z-index: 1;
   }
 
   .profile-avatar {
@@ -53,53 +69,92 @@
     background: white;
     border-radius: 50%;
     color: var(--primary-navy);
-    font-size: 36px;
-    font-weight: 700;
+    font-size: 38px;
+    font-weight: 800;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 4px rgba(193, 154, 76, 0.5), 0 10px 25px rgba(0, 0, 0, 0.3);
     overflow: hidden;
   }
 
   .btn-avatar-upload {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    background: #d97706;
+    bottom: 2px;
+    right: 2px;
+    width: 32px;
+    height: 32px;
+    background: var(--primary-gold, #c19a4c);
     color: white;
-    border: 2px solid white;
+    border: 3px solid #0f2443;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background 0.2s ease;
   }
 
   .btn-avatar-upload:hover {
-    background: #b45309;
+    background: #d4af6a;
     transform: scale(1.1);
   }
 
   .profile-header h2 {
+    position: relative;
     margin: 0;
-    font-size: 24px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    z-index: 1;
+    color: #ffffff;
+  }
+
+  .profile-header .username {
+    position: relative;
+    margin: 3px 0 14px;
+    opacity: 0.8;
+    font-size: 13.5px;
+    z-index: 1;
+  }
+
+  .role-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 12px;
     font-weight: 700;
+    letter-spacing: 0.04em;
+    z-index: 1;
   }
 
-  .profile-header p {
-    margin: 6px 0 0;
-    opacity: 0.9;
-    font-size: 14px;
-  }
-
+  /* ---------- Body / sections ---------- */
   .profile-body {
-    padding: 30px;
+    padding: 10px 36px 36px;
+    background: #ffffff;
+  }
+
+  .section-heading {
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 28px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-heading:first-child {
+    margin-top: 24px;
   }
 
   .profile-item {
@@ -107,7 +162,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-subtle);
     flex-wrap: wrap;
     gap: 12px;
   }
@@ -117,46 +172,71 @@
   }
 
   .profile-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--pp-label);
     font-size: 14px;
+  }
+
+  .profile-label i {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #f1f5f9;
+    color: var(--primary-navy);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
   }
 
   .profile-value {
     color: var(--text-dark);
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 14.5px;
   }
 
-  /* Compact Edit Pencil Button */
+  /* Edit Pencil Button */
   .btn-icon-edit {
-    background: transparent;
-    border: none;
-    color: #d97706;
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
     cursor: pointer;
-    font-size: 14px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    font-size: 12px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 8px;
+    transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 
   .btn-icon-edit:hover {
-    background: #fef3c7;
-    color: #b45309;
+    background: var(--primary-navy);
+    border-color: var(--primary-navy);
+    color: white;
   }
 
   .btn {
-    padding: 6px 14px;
+    padding: 8px 18px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    font-size: 12px;
-    transition: all 0.3s ease;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
   }
 
   .btn-warning {
@@ -170,52 +250,70 @@
   }
 
   .btn-secondary {
-    background: #e2e8f0;
+    background: #f1f5f9;
     color: #475569;
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    background: #e2e8f0;
   }
 
   .badge {
-    padding: 5px 12px;
-    border-radius: 20px;
+    padding: 5px 14px;
+    border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
+    letter-spacing: 0.02em;
     display: inline-block;
   }
 
   .bg-success {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
   }
 
   .bg-secondary {
-    background: #e2e8f0;
-    color: #475569;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid var(--border-color);
   }
 
   input, select {
-    padding: 8px 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 13px;
-    transition: all 0.3s ease;
+    padding: 9px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    background: #fff;
+    color: var(--text-dark);
+    transition: all 0.2s ease;
   }
 
   input:focus, select:focus {
     outline: none;
-    border-color: var(--primary-navy);
-    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+  }
+
+  #middleInitialInput {
+    text-transform: uppercase;
+    text-align: center;
+    width: 60px;
+    font-weight: 700;
   }
 
   .verify-box {
-    margin-top: 8px;
+    margin-top: 10px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
   .code-feedback {
-    margin-top: 6px;
-    font-size: 12px;
+    margin-top: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
   }
 
   .status-container {
@@ -228,10 +326,18 @@
   .status-badge-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
 
   @media (max-width: 550px) {
+    .profile-body {
+      padding: 10px 20px 28px;
+    }
+
+    .profile-header {
+      padding: 32px 20px 28px;
+    }
+
     .profile-item {
       flex-direction: column;
       align-items: flex-start;
@@ -249,31 +355,60 @@
   }
 </style>
 
-<div class="container">
-  <h1 class="page-title">My Profile</h1>
+<div class="container profile-container">
+  <h1 class="page-title">
+    {% if is_admin_viewing %}
+      Viewing {{ target_user.first_name }} {{ target_user.last_name }}'s Profile
+    {% else %}
+      My Profile
+    {% endif %}
+  </h1>
+
+  {% if is_admin_viewing %}
+    <div style="padding: 14px 22px; background: linear-gradient(135deg, #091528 0%, #1e3a8a 100%); color: #fff; border-radius: var(--radius-md); margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow-md);">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fas fa-user-shield" style="font-size: 17px;"></i>
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 14px;">Admin View Mode</div>
+          <div style="font-size: 12px; opacity: 0.85;">You are viewing this student profile as an administrator (read-only).</div>
+        </div>
+      </div>
+      <a href="{% url 'manage_account' %}" class="btn btn-sm" style="background: white; color: var(--primary-navy); border: none; font-weight: 700; padding: 8px 16px; border-radius: 8px; font-size: 12.5px;">
+        &larr; Back to Manage Accounts
+      </a>
+    </div>
+  {% endif %}
 
   <div class="profile-card">
     <div class="profile-header">
       <!-- Circle Avatar with Upload Icon -->
       <div class="avatar-container">
-        <div class="profile-avatar">
-          {% if user.profile.profile_picture %}
-            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
-          {% else %}
+        <div class="profile-avatar" id="profileAvatar" style="background: white; position: relative;">
+          <img id="profileAvatarImg"
+               src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}about:blank{% endif %}"
+               alt="Profile Picture"
+               style="width: 100%; height: 100%; object-fit: cover; display: {% if user.profile.profile_picture %}block{% else %}none{% endif %}; position: absolute; top: 0; left: 0; border-radius: 50%;"
+               onerror="this.style.display='none'; document.getElementById('profileAvatarInitials').style.display='flex';">
+          <span id="profileAvatarInitials"
+                style="display: {% if user.profile.profile_picture %}none{% else %}flex{% endif %}; width: 100%; height: 100%; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; background: white; border-radius: 50%; color: var(--primary-navy); font-size: 38px; font-weight: 800;">
             {{ user.username|slice:":1"|upper }}
-          {% endif %}
+          </span>
         </div>
-        
+
+        {% if not is_admin_viewing %}
         <!-- Camera Button to trigger file upload -->
         <label for="profilePictureInput" class="btn-avatar-upload" title="Change Profile Picture">
           <i class="fas fa-camera"></i>
         </label>
-        
+
         <!-- Hidden File Input -->
         <form id="profilePicForm" style="display: none;">
           {% csrf_token %}
           <input type="file" id="profilePictureInput" accept="image/*">
         </form>
+        {% endif %}
       </div>
 
       <h2>
@@ -283,18 +418,27 @@
         {% endif %}
         {{ user.last_name }}
       </h2>
-      <p>@{{ user.username }}</p>
-      <div id="profilePicFeedback" class="code-feedback" style="margin-top: 5px;"></div>
+      <p class="username">@{{ user.username }}</p>
+
+      <span class="role-badge">
+        <i class="fas fa-graduation-cap"></i>
+        {% if user.is_superuser %}Registrar Administrator{% elif user.is_staff %}Treasurer Administrator{% else %}Student Account{% endif %}
+      </span>
+
+      <div id="profilePicFeedback" class="code-feedback" style="margin-top: 10px; color: white;"></div>
     </div>
 
     <div class="profile-body">
+
+      <p class="section-heading"><i class="fas fa-user-circle"></i> Personal Information</p>
+
       <div class="profile-item">
-        <div class="profile-label">First Name</div>
+        <div class="profile-label"><i class="fas fa-user"></i> First Name</div>
         <div class="profile-value">{{ user.first_name }}</div>
       </div>
 
       <div class="profile-item">
-        <div class="profile-label">Middle Initial</div>
+        <div class="profile-label"><i class="fas fa-signature"></i> Middle Initial</div>
         <div class="status-container">
           <div id="middleInitialDisplay">
             <div class="status-badge-row">
@@ -303,19 +447,23 @@
               {% else %}
                 <span class="badge bg-secondary">Not Set</span>
               {% endif %}
+              {% if not is_admin_viewing and not user.profile.middle_initial or not is_admin_viewing and user.profile.middle_initial == 'N/A' %}
               <button type="button" id="editMiddleInitialBtn" class="btn-icon-edit" title="Edit Middle Initial">
                 <i class="fas fa-pencil-alt"></i>
               </button>
+              {% endif %}
             </div>
           </div>
+          {% if not is_admin_viewing and not user.profile.middle_initial or not is_admin_viewing and user.profile.middle_initial == 'N/A' %}
           <div id="middleInitialEdit" style="display: none;">
             <form id="middleInitialForm">
               {% csrf_token %}
-              <select id="middleInitialSelect" class="form-select" style="width: 170px;">
-                {% for value, label in user.profile.MIDDLE_INITIAL_CHOICES %}
-                  <option value="{{ value }}" {% if user.profile.middle_initial == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-              </select>
+              <input type="text"
+                     id="middleInitialInput"
+                     maxlength="1"
+                     placeholder="N/A"
+                     autocomplete="off"
+                     value="{% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' %}{{ user.profile.middle_initial }}{% endif %}">
               <div class="verify-box" style="margin-top: 8px; justify-content: flex-end;">
                 <button type="button" id="saveMiddleInitialBtn" class="btn btn-primary btn-sm">Save</button>
                 <button type="button" id="cancelMiddleInitialBtn" class="btn btn-secondary btn-sm">Cancel</button>
@@ -323,17 +471,18 @@
             </form>
             <div id="middleInitialFeedback" class="code-feedback"></div>
           </div>
+          {% endif %}
         </div>
       </div>
 
       <div class="profile-item">
-        <div class="profile-label">Last Name</div>
+        <div class="profile-label"><i class="fas fa-user"></i> Last Name</div>
         <div class="profile-value">{{ user.last_name }}</div>
       </div>
 
       <!-- Year Section -->
       <div class="profile-item">
-        <div class="profile-label">Year</div>
+        <div class="profile-label"><i class="fas fa-layer-group"></i> Academic Year</div>
         <div class="status-container">
           <div id="yearDisplay">
             <div class="status-badge-row">
@@ -342,11 +491,14 @@
               {% else %}
                 <span class="badge bg-secondary">Not Set</span>
               {% endif %}
+              {% if not is_admin_viewing %}
               <button type="button" id="editYearBtn" class="btn-icon-edit" title="Edit Year">
                 <i class="fas fa-pencil-alt"></i>
               </button>
+              {% endif %}
             </div>
           </div>
+          {% if not is_admin_viewing %}
           <div id="yearEdit" style="display: none;">
             <form id="yearForm">
               {% csrf_token %}
@@ -365,12 +517,13 @@
             </form>
             <div id="yearFeedback" class="code-feedback"></div>
           </div>
+          {% endif %}
         </div>
       </div>
 
       <!-- Student Status Section -->
       <div class="profile-item">
-        <div class="profile-label">Student Status</div>
+        <div class="profile-label"><i class="fas fa-id-card"></i> Student Status</div>
         <div class="status-container">
           <div id="studentStatusDisplay">
             <div class="status-badge-row">
@@ -385,18 +538,21 @@
               {% else %}
                 <span class="badge bg-secondary">Not Set</span>
               {% endif %}
+              {% if not is_admin_viewing %}
               <button type="button" id="editStudentInfoBtn" class="btn-icon-edit" title="Edit Student Status">
                 <i class="fas fa-pencil-alt"></i>
               </button>
+              {% endif %}
             </div>
 
             {% if user.profile.student_id and user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}
-              <div class="profile-value" style="margin-top: 4px; font-weight: 500;">
-                Student ID: {{ user.profile.student_id }}
+              <div class="profile-value" style="margin-top: 4px; font-weight: 500; font-size: 13.5px; color: var(--text-muted);">
+                Student ID: <strong style="color: var(--text-dark);">{{ user.profile.student_id }}</strong>
               </div>
             {% endif %}
           </div>
 
+          {% if not is_admin_viewing %}
           <div id="studentStatusEdit" style="display: none;">
             <form id="studentInfoForm" style="display: inline;">
               {% csrf_token %}
@@ -405,31 +561,36 @@
               <option value="student" {% if user.profile.student_status == 'student' or user.profile.student_status == 'regular' %}selected{% endif %}>Current Student</option>
               <option value="graduated" {% if user.profile.student_status == 'graduated' %}selected{% endif %}>Graduated</option>
             </select>
-            
+
             <div id="studentIdContainer" style="margin-top: 6px; {% if user.profile.student_status != 'student' and user.profile.student_status != 'regular' %}display: none;{% endif %}">
               <input type="text" id="studentIdInput" class="form-control" placeholder="Enter Student ID" value="{{ user.profile.student_id|default:'' }}" style="width: 170px;">
             </div>
-            
+
             <div class="verify-box" style="margin-top: 8px; justify-content: flex-end;">
               <button type="button" id="saveStudentInfoBtn" class="btn btn-primary btn-sm">Save</button>
               <button type="button" id="cancelStudentInfoBtn" class="btn btn-secondary btn-sm">Cancel</button>
             </div>
             <div id="studentInfoFeedback" class="code-feedback"></div>
           </div>
+          {% endif %}
         </div>
       </div>
 
+      <p class="section-heading"><i class="fas fa-shield-halved"></i> Contact &amp; Security</p>
+
       <div class="profile-item">
-        <div class="profile-label">Email</div>
+        <div class="profile-label"><i class="fas fa-envelope"></i> Email Address</div>
         <div style="text-align: right;">
           <div class="profile-value">{{ user.email }}</div>
           {% if user.profile.email_verified %}
-            <span class="badge bg-success mt-1 d-inline-block">✓ Verified</span>
+            <span class="badge bg-success mt-1 d-inline-block"><i class="fas fa-check-circle me-1"></i>Verified</span>
           {% else %}
             <div class="verify-box" style="justify-content: flex-end;">
               <form id="emailVerifyForm" style="display:inline;">
                 {% csrf_token %}
-                <button type="button" id="verifyEmailBtn" class="btn btn-warning btn-sm">Verify Now</button>
+                <button type="button" id="verifyEmailBtn" class="btn btn-warning btn-sm">
+                  <i class="fas fa-envelope-circle-check me-1"></i>Verify Now
+                </button>
               </form>
               <div id="emailCodeContainer" style="display: none;">
                 <form id="verifyEmailCodeForm" style="display:inline;">
@@ -445,7 +606,7 @@
       </div>
 
       <div class="profile-item">
-        <div class="profile-label">Phone</div>
+        <div class="profile-label"><i class="fas fa-phone"></i> Phone Number</div>
         <div>
           {% if user.profile.phone_number %}
             <div class="profile-value">{{ user.profile.phone_number }}</div>
@@ -472,12 +633,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
   profilePictureInput?.addEventListener('change', function() {
     if (this.files && this.files[0]) {
+      const selectedFile = this.files[0];
+
+      if (!selectedFile.type.startsWith('image/')) {
+        if (profilePicFeedback) {
+          profilePicFeedback.textContent = 'Please select a valid image file.';
+          profilePicFeedback.style.color = '#fecaca';
+        }
+        return;
+      }
+
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        if (profilePicFeedback) {
+          profilePicFeedback.textContent = 'Image file is too large. Maximum 5MB allowed.';
+          profilePicFeedback.style.color = '#fecaca';
+        }
+        return;
+      }
+
+      const avatarImg = document.getElementById('profileAvatarImg');
+      const avatarInitials = document.getElementById('profileAvatarInitials');
+
+      const objectUrl = URL.createObjectURL(selectedFile);
+      if (avatarImg) {
+        avatarImg.src = objectUrl;
+        avatarImg.style.display = 'block';
+        avatarImg.onerror = function() {
+          this.style.display = 'none';
+          if (avatarInitials) avatarInitials.style.display = 'flex';
+        };
+      }
+      if (avatarInitials) {
+        avatarInitials.style.display = 'none';
+      }
+
       const formData = new FormData();
-      formData.append('profile_picture', this.files[0]);
+      formData.append('profile_picture', selectedFile);
 
       if (profilePicFeedback) {
         profilePicFeedback.textContent = 'Uploading...';
-        profilePicFeedback.style.color = '#f59e0b';
+        profilePicFeedback.style.color = '#fde68a';
       }
 
       fetch("{% url 'update_profile' %}", {
@@ -487,23 +682,41 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         body: formData
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => Promise.reject(err)).catch(() => Promise.reject({message: 'Server error ' + res.status}));
+        }
+        return res.json();
+      })
       .then(data => {
         if (profilePicFeedback) {
           if (data.success) {
             profilePicFeedback.textContent = data.message || 'Profile picture updated!';
-            profilePicFeedback.style.color = '#10b981';
-            setTimeout(() => location.reload(), 1000);
+            profilePicFeedback.style.color = '#a7f3d0';
+            if (data.profile_picture_url && avatarImg) {
+              URL.revokeObjectURL(avatarImg.src);
+              avatarImg.src = data.profile_picture_url;
+            }
+            setTimeout(() => location.reload(), 1200);
           } else {
             profilePicFeedback.textContent = data.message || 'Failed to upload image.';
-            profilePicFeedback.style.color = '#ef4444';
+            profilePicFeedback.style.color = '#fecaca';
+            if (avatarImg && avatarInitials) {
+              avatarImg.style.display = 'none';
+              avatarInitials.style.display = 'flex';
+            }
           }
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Upload error:', err);
         if (profilePicFeedback) {
-          profilePicFeedback.textContent = 'An error occurred during upload.';
-          profilePicFeedback.style.color = '#ef4444';
+          profilePicFeedback.textContent = (err && err.message) || 'An error occurred during upload.';
+          profilePicFeedback.style.color = '#fecaca';
+        }
+        if (avatarImg && avatarInitials) {
+          avatarImg.style.display = 'none';
+          avatarInitials.style.display = 'flex';
         }
       });
     }
@@ -517,6 +730,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const feedback = document.getElementById('codeFeedback');
 
   btn?.addEventListener('click', function() {
+    if (btn.disabled) return;
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.style.opacity = '0.65';
+    btn.style.cursor = 'wait';
+    btn.textContent = codeContainer && codeContainer.style.display !== 'none' ? 'Resending...' : 'Sending...';
+    if (feedback) {
+      feedback.style.color = '#f59e0b';
+      feedback.textContent = 'Sending verification code to your email...';
+    }
+
     fetch("{% url 'send_verification_code' %}", {
       method: 'POST',
       headers: {
@@ -531,20 +755,42 @@ document.addEventListener('DOMContentLoaded', function() {
         feedback.textContent = data.message;
         feedback.style.color = '#059669';
         codeContainer.style.display = 'block';
+        btn.textContent = 'Resend Code';
+        setTimeout(() => {
+          if (codeInput) codeInput.focus();
+        }, 100);
       } else {
         feedback.textContent = data.message || 'Failed to send code.';
         feedback.style.color = '#dc2626';
+        btn.textContent = originalText;
       }
+    })
+    .catch(() => {
+      feedback.textContent = 'Network error. Please check your connection and try again.';
+      feedback.style.color = '#dc2626';
+      btn.textContent = originalText;
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
     });
   });
 
   submitBtn?.addEventListener('click', function() {
+    if (submitBtn.disabled) return;
     const code = codeInput.value.trim();
     if (!code) {
       feedback.textContent = 'Please enter the code.';
       feedback.style.color = '#dc2626';
       return;
     }
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.65';
+    submitBtn.style.cursor = 'wait';
+    const origText = submitBtn.textContent;
+    submitBtn.textContent = 'Verifying...';
+
     fetch("{% url 'verify_email_code' %}", {
       method: 'POST',
       headers: {
@@ -556,16 +802,37 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        feedback.textContent = 'Email verified successfully!';
+        feedback.textContent = data.message || 'Email verified successfully!';
         feedback.style.color = '#059669';
         codeContainer.style.display = 'none';
-        btn.style.display = 'none';
+        if (btn) btn.style.display = 'none';
         setTimeout(() => location.reload(), 1500);
       } else {
-        feedback.textContent = 'Incorrect code, try again.';
+        feedback.textContent = data.message || 'Incorrect code, try again.';
         feedback.style.color = '#dc2626';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '';
+        submitBtn.style.cursor = '';
+        submitBtn.textContent = origText;
+        codeInput.select();
+        codeInput.focus();
       }
+    })
+    .catch(() => {
+      feedback.textContent = 'Network error. Please try again.';
+      feedback.style.color = '#dc2626';
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '';
+      submitBtn.style.cursor = '';
+      submitBtn.textContent = origText;
     });
+  });
+
+  codeInput?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitBtn?.click();
+    }
   });
 
   // Student info edit/save JS
@@ -608,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   saveStudentInfoBtn?.addEventListener('click', function() {
     if (!studentStatusSelect || !studentIdInput) return;
-    
+
     const status = studentStatusSelect.value;
     const studentId = studentIdInput.value.trim();
 
@@ -665,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   saveYearBtn?.addEventListener('click', function() {
     if (!yearSelect) return;
-    
+
     const formData = new FormData();
     formData.append('year', yearSelect.value);
 
@@ -695,33 +962,51 @@ document.addEventListener('DOMContentLoaded', function() {
   const editMiddleInitialBtn = document.getElementById('editMiddleInitialBtn');
   const middleInitialDisplay = document.getElementById('middleInitialDisplay');
   const middleInitialEdit = document.getElementById('middleInitialEdit');
-  const middleInitialSelect = document.getElementById('middleInitialSelect');
+  const middleInitialInput = document.getElementById('middleInitialInput');
   const saveMiddleInitialBtn = document.getElementById('saveMiddleInitialBtn');
   const cancelMiddleInitialBtn = document.getElementById('cancelMiddleInitialBtn');
   const middleInitialFeedback = document.getElementById('middleInitialFeedback');
-  const originalMiddleInitial = middleInitialSelect ? middleInitialSelect.value : 'N/A';
+  const originalMiddleInitial = middleInitialInput ? middleInitialInput.value : '';
 
   editMiddleInitialBtn?.addEventListener('click', function() {
     if (middleInitialDisplay && middleInitialEdit) {
       middleInitialDisplay.style.display = 'none';
       middleInitialEdit.style.display = 'block';
+      middleInitialInput?.focus();
     }
   });
 
   cancelMiddleInitialBtn?.addEventListener('click', function() {
-    if (middleInitialSelect && middleInitialEdit && middleInitialDisplay) {
-      middleInitialSelect.value = originalMiddleInitial;
+    if (middleInitialInput && middleInitialEdit && middleInitialDisplay) {
+      middleInitialInput.value = originalMiddleInitial;
       middleInitialEdit.style.display = 'none';
       middleInitialDisplay.style.display = 'block';
       if (middleInitialFeedback) middleInitialFeedback.textContent = '';
     }
   });
 
+  // Only allow a single letter to be typed
+  middleInitialInput?.addEventListener('input', function() {
+    this.value = this.value.replace(/[^a-zA-Z]/g, '').slice(0, 1).toUpperCase();
+  });
+
   saveMiddleInitialBtn?.addEventListener('click', function() {
-    if (!middleInitialSelect) return;
-    
+    if (!middleInitialInput) return;
+
+    const rawValue = middleInitialInput.value.trim().toUpperCase();
+
+    if (rawValue && !/^[A-Z]$/.test(rawValue)) {
+      if (middleInitialFeedback) {
+        middleInitialFeedback.textContent = 'Please enter a single letter (A-Z), or leave blank for N/A.';
+        middleInitialFeedback.style.color = '#dc2626';
+      }
+      return;
+    }
+
+    const valueToSave = rawValue || 'N/A';
+
     const formData = new FormData();
-    formData.append('middle_initial', middleInitialSelect.value);
+    formData.append('middle_initial', valueToSave);
 
     fetch("{% url 'update_profile' %}", {
       method: 'POST',

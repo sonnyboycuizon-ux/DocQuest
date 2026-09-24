@@ -30,15 +30,48 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-#7hjfi#as8m1sgdp2l=l*1v%^x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.50.46', '192.168.50.132']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.50.46', '192.168.50.132', '192.168.50.54']
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     ALLOWED_HOSTS.append(f'*.{RENDER_EXTERNAL_HOSTNAME}')
 
+VERCEL_URL = os.getenv('VERCEL_URL') or os.getenv('VERCEL_BRANCH_URL') or os.getenv('VERCEL_PROJECT_PRODUCTION_URL')
+if VERCEL_URL:
+    VERCEL_URL = VERCEL_URL.replace('https://', '').replace('http://', '').rstrip('/')
+    ALLOWED_HOSTS.append(VERCEL_URL)
+    ALLOWED_HOSTS.append(f'*.{VERCEL_URL}')
+    ALLOWED_HOSTS.append('*.vercel.app')
+
+if os.getenv('ALLOW_ALL_HOSTS', 'False') == 'True':
+    ALLOWED_HOSTS = ['*']
+
 CSRF_TRUSTED_ORIGINS = []
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+    CSRF_TRUSTED_ORIGINS.append(f'http://{RENDER_EXTERNAL_HOSTNAME}')
+
+if VERCEL_URL:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{VERCEL_URL}')
+    CSRF_TRUSTED_ORIGINS.append(f'http://{VERCEL_URL}')
+    CSRF_TRUSTED_ORIGINS.append('https://*.vercel.app')
+
+EXTRA_CSRF_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if EXTRA_CSRF_ORIGINS:
+    for origin in EXTRA_CSRF_ORIGINS.split(','):
+        origin = origin.strip()
+        if origin:
+            CSRF_TRUSTED_ORIGINS.append(origin)
+
+if os.getenv('ALLOW_ALL_HOSTS', 'False') == 'True':
+    CSRF_TRUSTED_ORIGINS += [
+        'http://192.168.0.0/16',
+        'http://10.0.0.0/8',
+        'http://172.16.0.0/12',
+    ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+RUNNING_ON_VERCEL = os.getenv('RUNNING_ON_VERCEL', 'False') == 'True'
 
 
 # Application definition
@@ -76,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'requestsystem.context_processors.daily_request_context',
             ],
         },
     },
@@ -142,15 +176,26 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+_EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+_EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+if _EMAIL_HOST_PASSWORD:
+    _EMAIL_HOST_PASSWORD = _EMAIL_HOST_PASSWORD.replace(' ', '').strip()
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_USER = _EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = _EMAIL_HOST_PASSWORD
+DEFAULT_FROM_EMAIL = _EMAIL_HOST_USER
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+AUTHENTICATION_BACKENDS = [
+    'requestsystem.backends.AllowInactiveAuthBackend',
+]

@@ -3,139 +3,225 @@
 
 {% block content %}
 <style>
-    /* Fixed Watermark Background Image */
+    /* Fixed Watermark Background */
     body::before {
         content: '';
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 550px;
-        height: 550px;
+        width: 580px;
+        height: 580px;
         background-image: url("{% static 'images/cc.png' %}");
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        opacity: 0.12;
+        opacity: 0.05;
         pointer-events: none;
         z-index: 0;
     }
 
-    :root {
-        --primary-navy: #1a365d;
-        --primary-gold: #c19a4c;
-        --primary-light: #2d5a87;
-        --bg-light: #f8fafc;
-        --text-dark: #1e293b;
-        --text-muted: #64748b;
-        --border-color: #e2e8f0;
-        --card-bg: #ffffff;
-    }
-
-    body {
-        background-color: var(--bg-light);
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: var(--text-dark);
-        position: relative;
-    }
-
     .manage-accounts-container {
-        padding: 2rem 1.5rem;
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: var(--text-dark);
+        padding: 0.5rem 0 2rem 0;
         position: relative;
         z-index: 1;
     }
 
-    /* Page Title */
-    .page-title {
-        font-size: 24px;
+    /* Executive Header */
+    .registry-header {
+        background: linear-gradient(135deg, var(--surface-card) 0%, rgba(248, 250, 252, 0.95) 100%);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 1.75rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    .registry-header-content {
+        max-width: 720px;
+    }
+
+    .header-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.72rem;
         font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 4px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--primary-gold);
+        background: rgba(193, 154, 76, 0.12);
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        margin-bottom: 0.45rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--primary-navy);
+        margin-bottom: 0.25rem;
     }
 
     .page-subtitle {
-        font-size: 14px;
+        font-size: 0.88rem;
         color: var(--text-muted);
-        margin-bottom: 20px;
+        line-height: 1.45;
+        margin: 0;
     }
 
-    /* Counter Summary Cards */
-    .stats-card {
-        background: var(--card-bg);
-        border-radius: 14px;
-        padding: 14px 18px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    .btn-add-admin {
+        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-md);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 14px rgba(15, 36, 67, 0.25);
+        transition: all 0.25s ease;
+    }
+
+    .btn-add-admin:hover {
+        background: linear-gradient(135deg, #163259 0%, #254b8c 100%);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(15, 36, 67, 0.35);
+    }
+
+    /* KPI Summary Stat Cards */
+    .kpi-stat-card {
+        background: var(--surface-card);
         border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 1.4rem;
+        box-shadow: var(--shadow-sm);
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 1.1rem;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        height: 100%;
     }
 
-    .stats-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
+    .kpi-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(193, 154, 76, 0.4);
+    }
+
+    .kpi-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 1.15rem;
         flex-shrink: 0;
     }
 
-    .stats-number {
-        font-size: 20px;
+    .kpi-icon-wrap.navy {
+        background: rgba(15, 36, 67, 0.08);
+        color: var(--primary-navy);
+    }
+
+    .kpi-icon-wrap.green {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .kpi-icon-wrap.purple {
+        background: rgba(99, 102, 241, 0.1);
+        color: #4f46e5;
+    }
+
+    .kpi-value {
+        font-size: 1.6rem;
         font-weight: 800;
+        letter-spacing: -0.03em;
         color: var(--text-dark);
-        line-height: 1.2;
+        line-height: 1.1;
     }
 
-    .stats-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-muted);
+    .kpi-label {
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.03em;
-    }
-
-    /* Filter Card */
-    .filter-card {
-        background: var(--card-bg);
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        padding: 20px;
-        margin-bottom: 24px;
-    }
-
-    .form-label {
-        font-size: 13px;
-        font-weight: 600;
+        letter-spacing: 0.06em;
         color: var(--text-muted);
-        margin-bottom: 6px;
+        margin-top: 0.25rem;
+    }
+
+    /* Filter & Search Bar */
+    .filter-card {
+        background: var(--surface-card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .search-input-wrapper .form-control {
+        padding-left: 40px;
+    }
+
+    .form-label-custom {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        margin-bottom: 0.45rem;
+        display: block;
     }
 
     .form-select, .form-control {
-        border: 2px solid var(--border-color);
-        border-radius: 12px;
-        padding: 10px 14px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        background: #f8fafc;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 0.95rem;
+        font-size: 0.88rem;
+        color: var(--text-dark);
+        background-color: #f8fafc;
+        transition: all 0.2s ease;
     }
 
     .form-select:focus, .form-control:focus {
-        border-color: var(--primary-navy);
-        box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+        border-color: var(--primary-light);
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
         outline: none;
-        background: white;
     }
 
-    /* Table Card */
+    /* Table Surface */
     .table-card {
-        background: var(--card-bg);
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        background: var(--surface-card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
         overflow: hidden;
     }
 
@@ -145,194 +231,252 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    table {
+    #registryTable {
         width: 100%;
-        border-collapse: collapse;
-        text-align: left;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
     }
 
-    thead {
-        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
-        color: white;
+    #registryTable thead {
+        background: linear-gradient(135deg, #091528 0%, #0f2443 100%);
+        color: #ffffff;
     }
 
-    th {
-        padding: 14px 16px;
-        font-size: 13px;
+    #registryTable th {
+        padding: 1rem 1.25rem;
+        font-size: 0.72rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
+        border: none;
         white-space: nowrap;
     }
 
-    td {
-        padding: 14px 16px;
+    #registryTable tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    #registryTable tbody tr:hover {
+        background-color: rgba(248, 250, 252, 0.9);
+    }
+
+    #registryTable td {
+        padding: 0.95rem 1.25rem;
         border-bottom: 1px solid var(--border-color);
         color: var(--text-dark);
-        font-size: 14px;
+        font-size: 0.88rem;
         vertical-align: middle;
         white-space: nowrap;
     }
 
-    tr:last-child td {
+    #registryTable tr:last-child td {
         border-bottom: none;
     }
 
-    tr:hover {
-        background-color: var(--bg-light);
-    }
-
-    /* Interactive User Profile Link */
+    /* User Profile Card within Row */
     .user-profile-cell {
         display: flex;
         align-items: center;
         gap: 0.85rem;
         text-decoration: none;
         color: inherit;
-        border-radius: 12px;
-        padding: 6px 10px;
-        margin: -6px -10px;
+        border-radius: var(--radius-md);
+        padding: 0.35rem 0.6rem;
+        margin: -0.35rem -0.6rem;
         transition: all 0.2s ease;
         cursor: pointer;
     }
 
     .user-profile-cell:hover {
-        background-color: rgba(26, 54, 93, 0.08);
+        background-color: rgba(15, 36, 67, 0.05);
     }
 
     .user-profile-cell:hover .user-name-text {
-        color: var(--primary-navy);
-        text-decoration: underline;
+        color: var(--primary-light);
+    }
+
+    .avatar-placeholder, .avatar-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(15, 36, 67, 0.15);
+        flex-shrink: 0;
     }
 
     .avatar-placeholder {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
-        color: white;
-        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         text-transform: uppercase;
-        box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);
-        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .user-name-text {
+        font-weight: 700;
+        display: block;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        line-height: 1.3;
+        transition: color 0.15s ease;
     }
 
     .meta-subtext {
         display: block;
-        font-size: 0.75rem;
+        font-size: 0.74rem;
         color: var(--text-muted);
-        margin-top: 0.2rem;
+        margin-top: 0.15rem;
     }
 
     /* Badges */
-    .badge {
+    .badge-modern {
         display: inline-flex;
         align-items: center;
-        padding: 0.35rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
+        gap: 0.4rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.74rem;
         font-weight: 700;
+        letter-spacing: 0.02em;
     }
 
-    .badge-active { 
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0); 
-        color: #065f46; 
-    }
-    .badge-admin { 
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
-        color: #1e40af; 
-    }
-    .badge-suspended { 
-        background: linear-gradient(135deg, #fee2e2, #fecaca); 
-        color: #991b1b; 
+    .badge-modern::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
     }
 
-    /* Buttons */
-    .btn-primary-add {
-        background: linear-gradient(135deg, var(--primary-gold), #d4a95e);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 12px;
+    .badge-active {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    .badge-active::before {
+        background: #10b981;
+    }
+
+    .badge-admin {
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+    .badge-admin::before {
+        background: #3b82f6;
+    }
+
+    .badge-suspended {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+    .badge-suspended::before {
+        background: #ef4444;
+    }
+
+    .id-tag {
+        font-family: 'SFMono-Regular', Consolas, monospace;
+        font-size: 0.82rem;
         font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
+        background: rgba(15, 36, 67, 0.05);
+        padding: 0.25rem 0.55rem;
+        border-radius: 6px;
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        display: inline-block;
     }
 
-    .btn-primary-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(193, 154, 76, 0.3);
+    .id-super-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--primary-gold);
+        background: rgba(193, 154, 76, 0.12);
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        border: 1px solid rgba(193, 154, 76, 0.3);
+        letter-spacing: 0.04em;
     }
 
-    /* Action Buttons Wrapper */
+    .id-staff-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--primary-light);
+        background: rgba(30, 58, 138, 0.1);
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        border: 1px solid rgba(30, 58, 138, 0.25);
+        letter-spacing: 0.04em;
+    }
+
+    /* Action Buttons */
     .action-group {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 0.45rem;
     }
 
-    /* Action Icon Buttons Exact Sizing */
     .btn-action-edit, .btn-action-delete {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         padding: 0;
-        border-radius: 10px;
+        border-radius: 9px;
         border: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 0.85rem;
         cursor: pointer;
         transition: all 0.2s ease;
         text-decoration: none;
-        box-sizing: border-box;
     }
 
     .btn-action-edit {
-        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
-        color: white;
+        background: rgba(15, 36, 67, 0.08);
+        color: var(--primary-navy);
+        border: 1px solid rgba(15, 36, 67, 0.15);
     }
 
     .btn-action-edit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
-        color: white;
+        background: var(--primary-navy);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(15, 36, 67, 0.2);
     }
 
     .btn-action-delete {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        color: white;
+        background: rgba(220, 38, 38, 0.08);
+        color: #dc2626;
+        border: 1px solid rgba(220, 38, 38, 0.2);
     }
 
     .btn-action-delete:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        background: #dc2626;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
     }
 
-    /* Pagination Styling */
+    /* Pagination */
     .pagination-container {
-        padding: 14px 20px;
-        background: var(--card-bg);
+        padding: 1rem 1.5rem;
+        background: var(--surface-card);
         border-top: 1px solid var(--border-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 0.75rem;
     }
 
     .pagination-info {
-        font-size: 13px;
+        font-size: 0.82rem;
         color: var(--text-muted);
         font-weight: 500;
     }
@@ -340,252 +484,218 @@
     .pagination-controls {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 0.35rem;
     }
 
     .page-btn {
-        padding: 6px 12px;
-        font-size: 13px;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 0.65rem;
+        font-size: 0.82rem;
         font-weight: 600;
         border: 1px solid var(--border-color);
-        background: white;
+        background: #ffffff;
         color: var(--text-dark);
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.2s ease;
     }
 
     .page-btn:hover:not(:disabled) {
-        background: var(--primary-navy);
-        color: white;
+        background: rgba(15, 36, 67, 0.06);
+        color: var(--primary-navy);
         border-color: var(--primary-navy);
     }
 
     .page-btn.active {
-        background: var(--primary-navy);
-        color: white;
+        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+        color: #ffffff;
         border-color: var(--primary-navy);
+        box-shadow: 0 2px 8px rgba(15, 36, 67, 0.25);
     }
 
     .page-btn:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
     }
 
-    /* Compact & Mobile-Optimized Profile View Modal */
+    /* Student Profile Modal */
     .modal-dialog-compact {
-        max-width: 420px;
-        margin: 1.25rem auto;
+        max-width: 440px;
+        margin: 1.5rem auto;
     }
 
-    .modal-content {
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    .modal-content-custom {
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px -12px rgba(15, 36, 67, 0.35);
         overflow: hidden;
+        background: #ffffff;
     }
 
     .modal-profile-header {
-        background: linear-gradient(135deg, var(--primary-navy), var(--primary-light));
-        padding: 1.75rem 1rem 1.25rem 1rem;
-        color: white;
+        background: linear-gradient(135deg, #091528 0%, #0f2443 60%, #1e3a8a 100%);
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+        color: #ffffff;
         text-align: center;
         position: relative;
     }
 
     .modal-profile-img {
-        width: 100px;
-        height: 100px;
+        width: 88px;
+        height: 88px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #ffffff;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        margin: 0 auto;
+        display: block;
     }
 
     .modal-avatar-placeholder {
-        width: 100px;
-        height: 100px;
+        width: 88px;
+        height: 88px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-gold), #d4a95e);
-        color: white;
+        background: linear-gradient(135deg, var(--primary-gold) 0%, #d4a95e 100%);
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.2rem;
-        font-weight: 700;
+        font-size: 2rem;
+        font-weight: 800;
         margin: 0 auto;
-        border: 3px solid #ffffff;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
-    .detail-card {
+    .modal-detail-card {
         background: #f8fafc;
-        border-radius: 10px;
-        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
         border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 8px;
+        gap: 0.85rem;
+        margin-bottom: 0.65rem;
     }
 
-    .detail-card-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: rgba(26, 54, 93, 0.08);
+    .modal-detail-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(15, 36, 67, 0.08);
         color: var(--primary-navy);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 0.95rem;
         flex-shrink: 0;
     }
 
-    /* Custom Mobile Improvements */
-    @media (max-width: 576px) {
-        .manage-accounts-container {
-            padding: 1rem 0.75rem;
+    @media (max-width: 768px) {
+        .registry-header {
+            flex-direction: column;
+            align-items: flex-start;
         }
-        
-        .page-title {
-            font-size: 1.25rem;
-        }
-
-        .stats-card {
-            padding: 10px 14px;
-            gap: 10px;
-        }
-
-        .stats-icon {
-            width: 36px;
-            height: 36px;
-            font-size: 15px;
-        }
-
-        .stats-number {
-            font-size: 16px;
-        }
-
-        .stats-label {
-            font-size: 10px;
-        }
-
-        .filter-card {
-            padding: 14px;
-            border-radius: 12px;
-        }
-
-        .modal-dialog-compact {
-            margin: 0.75rem;
-            max-width: calc(100% - 1.5rem);
-        }
-
-        .modal-profile-header {
-            padding: 1.5rem 1rem 1rem 1rem;
-        }
-
-        .modal-profile-img, .modal-avatar-placeholder {
-            width: 85px;
-            height: 85px;
-            font-size: 1.8rem;
-        }
-
-        .detail-card {
-            padding: 8px 12px;
-        }
-
-        .detail-card-icon {
-            width: 30px;
-            height: 30px;
-            font-size: 12px;
-        }
-
-        th, td {
-            padding: 10px 12px;
-            font-size: 0.85rem;
+        .btn-add-admin {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>
 
 <div class="manage-accounts-container">
     
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-        <div>
-            <div class="page-title">Account Registry Management</div>
-            <div class="page-subtitle">Review institutional records, configure profile definitions, and track active parameters.</div>
+    <!-- Executive Page Header -->
+    <div class="registry-header">
+        <div class="registry-header-content">
+            <span class="header-eyebrow">
+                <i class="fas fa-id-badge"></i> Institutional Registry
+            </span>
+            <h1 class="page-title">Account Registry Management</h1>
+            <p class="page-subtitle">Review institutional records, verify student statuses, and govern role privilege assignments.</p>
         </div>
-        <a href="{% url 'add_admin' %}" class="btn-primary-add">
-            <i class="fa-solid fa-user-tie"></i> Add Admin
-        </a>
+        <div>
+            <a href="{% url 'add_admin' %}" class="btn-add-admin">
+                <i class="fas fa-user-plus"></i> Add Administrator
+            </a>
+        </div>
     </div>
 
-    <!-- Summary Stats Cards -->
+    <!-- Summary KPI Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-4">
-            <div class="stats-card">
-                <div class="stats-icon" style="background: rgba(26, 54, 93, 0.1); color: var(--primary-navy);">
+        <div class="col-12 col-md-4">
+            <div class="kpi-stat-card">
+                <div class="kpi-icon-wrap navy">
                     <i class="fas fa-users"></i>
                 </div>
                 <div>
-                    <div id="totalAccountsCount" class="stats-number">0</div>
-                    <div class="stats-label">Total Accounts</div>
+                    <div id="totalAccountsCount" class="kpi-value">0</div>
+                    <div class="kpi-label">Total Accounts</div>
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="stats-card">
-                <div class="stats-icon" style="background: rgba(6, 95, 70, 0.1); color: #065f46;">
+        <div class="col-12 col-md-4">
+            <div class="kpi-stat-card">
+                <div class="kpi-icon-wrap green">
                     <i class="fas fa-user-graduate"></i>
                 </div>
                 <div>
-                    <div id="totalStudentsCount" class="stats-number">0</div>
-                    <div class="stats-label">Students</div>
+                    <div id="totalStudentsCount" class="kpi-value">0</div>
+                    <div class="kpi-label">Active Students</div>
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="stats-card">
-                <div class="stats-icon" style="background: rgba(30, 64, 175, 0.1); color: #1e40af;">
+        <div class="col-12 col-md-4">
+            <div class="kpi-stat-card">
+                <div class="kpi-icon-wrap purple">
                     <i class="fas fa-user-shield"></i>
                 </div>
                 <div>
-                    <div id="totalAdminsCount" class="stats-number">0</div>
-                    <div class="stats-label">Admins</div>
+                    <div id="totalAdminsCount" class="kpi-value">0</div>
+                    <div class="kpi-label">Administrative Staff</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Search & Filter Controls -->
     <div class="filter-card">
         <div class="row g-3 align-items-end">
-            <div class="col-md-8">
-                <label for="statusFilter" class="form-label">Filter by Status</label>
+            <div class="col-md-6 col-lg-5">
+                <label for="statusFilter" class="form-label-custom">Filter by Status & Role</label>
                 <select id="statusFilter" class="form-select">
-                    <option value="all">All Records</option>
+                    <option value="all">All Registry Records</option>
                     <option value="current student">Current Students</option>
-                    <option value="graduated">Graduated</option>
-                    <option value="admin">Admin Accounts</option>
+                    <option value="graduated">Graduated Students</option>
+                    <option value="admin">Administrative Accounts</option>
                 </select>
             </div>
-            <div class="col-md-4">
-                <label for="searchInput" class="form-label">Search</label>
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or Student ID...">
+            <div class="col-md-6 col-lg-7">
+                <label for="searchInput" class="form-label-custom">Quick Directory Search</label>
+                <div class="search-input-wrapper">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by full name, email, or Student ID...">
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Accounts Table Card -->
     <div class="table-card">
         <div class="table-responsive">
             <table id="registryTable">
                 <thead>
                     <tr>
-                        <th style="width: 160px;">Student/Admin ID</th>
+                        <th style="width: 170px;">Identifier</th>
                         <th>User Profile</th>
-                        <th>Email</th>
+                        <th>Email Contact</th>
                         <th>Phone</th>
                         <th>System Access</th>
-                        <th style="width: 120px; text-align: center;">Actions</th>
+                        <th style="width: 110px; text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
@@ -593,21 +703,22 @@
                     <tr id="user-row-{{ user.id }}" 
                         data-status="{% if user.is_staff or user.is_superuser %}admin{% else %}{{ user.profile.get_student_status_display|lower }}{% endif %}"
                         data-type="{% if user.is_staff or user.is_superuser %}admin{% else %}student{% endif %}">
-                        <td style="color: var(--text-dark); font-weight: 600; letter-spacing: 0.02em;">
+                        <td>
                             {% if user.is_superuser %}
-                                <span style="color: var(--primary-gold);">SUPER ADMIN</span>
+                                <span class="id-super-tag"><i class="fas fa-crown me-1"></i>SUPER ADMIN</span>
                             {% elif user.is_staff %}
-                                <span style="color: var(--primary-light);">STAFF ADMIN</span>
+                                <span class="id-staff-tag"><i class="fas fa-user-shield me-1"></i>STAFF ADMIN</span>
                             {% elif user.profile.student_id %}
-                                {{ user.profile.student_id }}
+                                <span class="id-tag">{{ user.profile.student_id }}</span>
                             {% else %}
-                                <span style="color: var(--text-muted); font-weight: 400;">—</span>
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">—</span>
                             {% endif %}
                         </td>
                         
                         <td>
-                            <!-- Clickable Profile Link -->
+                            <!-- Clickable Profile Trigger Link -->
                             <a href="#" class="user-profile-cell student-info-trigger"
+                               data-user-id="{{ user.id }}"
                                data-id="{% if user.profile.student_id %}{{ user.profile.student_id }}{% else %}N/A{% endif %}"
                                data-name="{{ user.first_name }} {% if user.profile.middle_initial %}{{ user.profile.middle_initial }}. {% endif %}{{ user.last_name }}"
                                data-email="{{ user.email }}"
@@ -618,14 +729,17 @@
                                data-status="{% if not user.is_active %}Suspended{% elif user.is_superuser %}Super Admin{% elif user.is_staff %}Staff Admin{% else %}Current Student{% endif %}">
                                 
                                 {% if user.profile.profile_picture %}
-                                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 40px; height: 40px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);">
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="avatar-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="avatar-placeholder" style="display: none;">
+                                        {{ user.username|slice:":2" }}
+                                    </div>
                                 {% else %}
                                     <div class="avatar-placeholder">
                                         {{ user.username|slice:":2" }}
                                     </div>
                                 {% endif %}
                                 <div>
-                                    <span class="user-name-text" style="font-weight: 700; display: block; color: var(--text-dark);">
+                                    <span class="user-name-text">
                                         {{ user.first_name|cut:" N."|cut:" N" }}
                                         {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' and user.profile.middle_initial != 'None' %}
                                             {{ user.profile.middle_initial }}.
@@ -641,17 +755,23 @@
                             </a>
                         </td>
                         
-                        <td style="color: var(--text-muted);">{{ user.email }}</td>
+                        <td style="color: var(--text-muted); font-size: 0.85rem;">
+                            <i class="far fa-envelope me-1 opacity-50"></i>{{ user.email }}
+                        </td>
                         
-                        <td style="color: var(--text-dark);">
-                            {% if user.profile.phone_number %}{{ user.profile.phone_number }}{% else %}<span style="color: var(--text-muted); font-size: 0.8rem;">None Saved</span>{% endif %}
+                        <td style="color: var(--text-dark); font-size: 0.85rem;">
+                            {% if user.profile.phone_number %}
+                                <i class="fas fa-phone-alt me-1 opacity-50" style="font-size: 0.75rem;"></i>{{ user.profile.phone_number }}
+                            {% else %}
+                                <span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Not provided</span>
+                            {% endif %}
                         </td>
                         
                         <td>
                             {% if not user.is_active %}
-                                <span id="status-badge-{{ user.id }}" class="badge badge-suspended">Suspended</span>
+                                <span id="status-badge-{{ user.id }}" class="badge-modern badge-suspended">Suspended</span>
                             {% else %}
-                                <span id="status-badge-{{ user.id }}" class="badge {% if user.is_staff or user.is_superuser %}badge-admin{% else %}badge-active{% endif %}">
+                                <span id="status-badge-{{ user.id }}" class="badge-modern {% if user.is_staff or user.is_superuser %}badge-admin{% else %}badge-active{% endif %}">
                                     {% if user.is_superuser %}Super Admin{% elif user.is_staff %}Staff Admin{% else %}Current Student{% endif %}
                                 </span>
                             {% endif %}
@@ -659,15 +779,15 @@
 
                         <td style="text-align: center;">
                             <div class="action-group">
-                                <a href="{% url 'edit_user' user.id %}" class="btn-action-edit" title="Edit User">
+                                <a href="{% url 'edit_user' user.id %}" class="btn-action-edit" title="Edit User Account">
                                     <i class="fas fa-pencil"></i>
                                 </a>
                                 <form method="POST" action="{% url 'delete_user' user.id %}" style="display:inline; margin: 0;">
                                     {% csrf_token %}
                                     <button type="submit"
                                             class="btn-action-delete"
-                                            title="Delete User"
-                                            onclick="return confirm('Are you sure you want to delete this account?')">
+                                            title="Delete User Account"
+                                            onclick="return confirm('Are you sure you want to permanently delete this user account?')">
                                         <i class="fas fa-trash-can"></i>
                                     </button>
                                 </form>
@@ -676,9 +796,12 @@
                     </tr>
                     {% empty %}
                     <tr id="noDataRow">
-                        <td colspan="6" style="text-align: center; padding: 3rem 0; color: var(--text-muted);">
-                            <i class="fas fa-inbox mb-3" style="font-size: 40px; opacity: 0.5;"></i>
-                            <br>No active account configurations match this filter context.
+                        <td colspan="6" style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(15, 36, 67, 0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 1.5rem;">
+                                <i class="fas fa-inbox opacity-50"></i>
+                            </div>
+                            <div class="fw-bold fs-6 text-dark mb-1">No Registry Accounts Found</div>
+                            <div class="small">No active user records match the selected filter or search criteria.</div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -686,7 +809,7 @@
             </table>
         </div>
 
-        <!-- Pagination Controls Section -->
+        <!-- Pagination Section -->
         <div class="pagination-container">
             <div id="paginationInfo" class="pagination-info">Showing 0 of 0 entries</div>
             <div id="paginationControls" class="pagination-controls"></div>
@@ -694,64 +817,68 @@
     </div>
 </div>
 
-<!-- Compact Student Profile View Modal -->
+<!-- Modern Student/Admin Profile Modal -->
 <div class="modal fade" id="studentInfoModal" tabindex="-1" aria-labelledby="studentInfoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-compact">
-        <div class="modal-content">
+        <div class="modal-content modal-content-custom">
             
             <div class="modal-profile-header">
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
-                <div class="mb-2" id="modalAvatarContainer">
-                    <!-- Dynamic Picture/Initials -->
+                <div class="mb-3" id="modalAvatarContainer">
+                    <!-- Dynamic Picture or Initials -->
                 </div>
-                <h4 id="modalName" class="fw-bold mb-1 fs-5"></h4>
-                <span id="modalRole" class="badge badge-admin mt-1" style="font-size: 11px;"></span>
+                <h4 id="modalName" class="fw-bold mb-1 fs-5 text-white"></h4>
+                <div class="d-flex justify-content-center mt-2">
+                    <span id="modalRole" class="badge-modern badge-admin" style="font-size: 0.72rem;"></span>
+                </div>
             </div>
 
-            <div class="modal-body p-3">
-                <div class="detail-card">
-                    <div class="detail-card-icon">
+            <div class="modal-body p-3 p-md-4">
+                <div class="modal-detail-card">
+                    <div class="modal-detail-icon">
                         <i class="fas fa-id-card"></i>
                     </div>
                     <div class="text-truncate">
-                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Student / User ID</small>
+                        <small class="text-muted d-block fw-semibold" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Student / Staff Identifier</small>
                         <span id="modalID" class="fw-bold text-dark fs-6"></span>
                     </div>
                 </div>
 
-                <div class="detail-card">
-                    <div class="detail-card-icon">
+                <div class="modal-detail-card">
+                    <div class="modal-detail-icon">
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="text-truncate">
-                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Email Address</small>
+                        <small class="text-muted d-block fw-semibold" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Email Address</small>
                         <span id="modalEmail" class="fw-semibold text-dark small"></span>
                     </div>
                 </div>
 
-                <div class="detail-card">
-                    <div class="detail-card-icon">
+                <div class="modal-detail-card">
+                    <div class="modal-detail-icon">
                         <i class="fas fa-phone"></i>
                     </div>
                     <div class="text-truncate">
-                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Contact Number</small>
+                        <small class="text-muted d-block fw-semibold" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Contact Phone</small>
                         <span id="modalPhone" class="fw-semibold text-dark small"></span>
                     </div>
                 </div>
 
-                <div class="detail-card mb-0">
-                    <div class="detail-card-icon">
+                <div class="modal-detail-card mb-0">
+                    <div class="modal-detail-icon">
                         <i class="fas fa-shield-halved"></i>
                     </div>
                     <div class="text-truncate">
-                        <small class="text-muted d-block fw-semibold" style="font-size: 10px; text-transform: uppercase;">Account Status</small>
+                        <small class="text-muted d-block fw-semibold" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Account Status</small>
                         <span id="modalStatus" class="fw-semibold text-dark small"></span>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-footer bg-light border-0 justify-content-center p-2">
-                <button type="button" class="btn btn-sm btn-secondary px-4 fw-semibold" style="border-radius: 10px;" data-bs-dismiss="modal">Close</button>
+                <div class="mt-3 pt-2 text-center" id="modalFullProfileWrapper" style="display: none;">
+                    <a href="#" id="modalViewFullProfileBtn" class="btn btn-sm btn-outline-secondary w-100" style="border-radius: var(--radius-md); font-weight: 600;">
+                        <i class="fas fa-user-circle me-1"></i> View Complete User Profile
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -798,7 +925,6 @@
             const totalRows = filteredRows.length;
             const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
 
-            // Guard check for page bounds
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
 
@@ -833,7 +959,7 @@
             const controlsContainer = document.getElementById('paginationControls');
             controlsContainer.innerHTML = '';
 
-            if (totalRows <= rowsPerPage) return; // Don't show buttons if 10 or fewer items
+            if (totalRows <= rowsPerPage) return;
 
             // Previous Button
             const prevBtn = document.createElement('button');
@@ -889,7 +1015,7 @@
                 return matchesSearch && matchesStatus;
             });
 
-            currentPage = 1; // Reset to page 1 on search or filter change
+            currentPage = 1;
             renderPagination();
         }
 
@@ -908,6 +1034,7 @@
             trigger.addEventListener('click', function(e) {
                 e.preventDefault();
 
+                const userId = this.getAttribute('data-user-id');
                 const id = this.getAttribute('data-id');
                 const name = this.getAttribute('data-name');
                 const email = this.getAttribute('data-email');
@@ -917,7 +1044,6 @@
                 const initials = this.getAttribute('data-initials');
                 const status = this.getAttribute('data-status');
 
-                // Populate Modal Data
                 document.getElementById('modalID').textContent = id;
                 document.getElementById('modalName').textContent = name;
                 document.getElementById('modalEmail').textContent = email;
@@ -925,11 +1051,29 @@
                 document.getElementById('modalRole').textContent = role;
                 document.getElementById('modalStatus').textContent = status;
 
+                const fullProfileBtn = document.getElementById('modalViewFullProfileBtn');
+                const fullProfileWrapper = document.getElementById('modalFullProfileWrapper');
+                if (fullProfileBtn && userId) {
+                    fullProfileBtn.href = '{% url "view_user_profile" 0 %}'.replace('0', userId);
+                    if (fullProfileWrapper) fullProfileWrapper.style.display = 'block';
+                }
+
                 const avatarContainer = document.getElementById('modalAvatarContainer');
                 if (picture) {
-                    avatarContainer.innerHTML = `<img src="${picture}" alt="Profile Picture" class="modal-profile-img">`;
+                    avatarContainer.innerHTML = `
+                        <img src="${picture}" alt="Profile Picture" class="modal-profile-img" id="modalAvatarImg"
+                             onerror="this.style.display='none';
+                                      var fb=document.getElementById('modalAvatarFallback');
+                                      if(fb){fb.style.display='flex';}">
+                        <div id="modalAvatarFallback" class="modal-avatar-placeholder"
+                             style="display: none;">
+                            ${initials || '??'}
+                        </div>`;
                 } else {
-                    avatarContainer.innerHTML = `<div class="modal-avatar-placeholder">${initials}</div>`;
+                    avatarContainer.innerHTML = `
+                        <div class="modal-avatar-placeholder">
+                            ${initials || '??'}
+                        </div>`;
                 }
 
                 studentModal.show();

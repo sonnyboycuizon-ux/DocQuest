@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .forms import CustomPasswordResetForm, CustomSetPasswordForm
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -54,7 +56,9 @@ path(
     path('request/', views.request_document, name='request_document'),
     path('cancel/<int:request_id>/', views.cancel_request, name='cancel_request'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('standard-admin-dashboard/', views.standard_admin_dashboard, name='standard_admin_dashboard'),
     path('profile/', views.profile_view, name='profile'),
+    path('profile/user/<int:user_id>/', views.view_user_profile, name='view_user_profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
     path('payment/', views.payment_view, name='payment'),
     path('notifications/', views.notifications, name='notifications'),
@@ -62,7 +66,6 @@ path(
     path('verify-email-code/', views.verify_email_code, name='verify_email_code'),
     path('send-phone-code/', views.send_phone_code, name='send_phone_code'),
     path('verify-phone-code/', views.verify_phone_code, name='verify_phone_code'),
-    path('verify-email-direct/', views.verify_email_direct, name='verify_email_direct'),
     path('request-analysis/', views.request_analysis, name='request_analysis'),
     path('manage-account/', views.manage_accounts, name='manage_account'),
     path('manage-account/update/<int:user_id>/', views.update_user_status, name='update_user_status'),
@@ -71,3 +74,6 @@ path(
     path('add-admin/', views.add_admin, name='add_admin'),
     path('manage-account/edit/<int:user_id>/', views.edit_user, name='edit_user'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

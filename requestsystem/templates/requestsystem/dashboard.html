@@ -13,127 +13,341 @@
     height: 100vh;
     background-image: url("{% static 'images/conso.jpg' %}");
     background-size: cover;
-    background-position: center;
+    background-position: center;  
     background-repeat: no-repeat;
-    opacity: 0.55;
+    opacity: 0.12;
     pointer-events: none;
     z-index: -1;
   }
 
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-header-box {
+    margin-bottom: 24px;
+  }
+
   .page-title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     color: var(--text-dark);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
   }
 
   .page-subtitle {
     font-size: 14px;
-    color: #64748b;
-    margin-bottom: 30px;
-  }
-
-  .welcome-card {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
-    border-radius: 16px;
-    padding: 30px;
-    color: white;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 10px 30px rgba(26, 54, 93, 0.25);
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .welcome-text h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0 0 6px;
-  }
-
-  .welcome-text p {
-    font-size: 14px;
-    opacity: 0.9;
+    color: var(--text-muted);
     margin: 0;
   }
 
+  /* Welcome Banner */
+  .welcome-card {
+    background: linear-gradient(135deg, #091528 0%, #0f2443 55%, #1e3a8a 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    color: white;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+    flex-wrap: wrap;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .welcome-card::after {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(193, 154, 76, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .welcome-text {
+    position: relative;
+    z-index: 1;
+    max-width: 650px;
+  }
+
+  .welcome-text h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+  }
+
+  .welcome-text p {
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0;
+    line-height: 1.5;
+  }
+
   .request-btn {
-    background: white;
+    background: #ffffff;
     color: var(--primary-navy);
-    padding: 12px 28px;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 13px 28px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 14px;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    border: 1.5px solid rgba(255,255,255,0.9);
   }
 
   .request-btn:hover {
     background: #f8fafc;
+    color: var(--primary-navy);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
   }
 
-  /* --- STATS SECTION (COMPACT & MODERN STYLE) --- */
+  .request-btn.request-btn-disabled,
+  .request-btn.request-btn-disabled:hover {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.85;
+    border-color: #cbd5e1;
+  }
+
+  .daily-limit-banner {
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
+  }
+
+  .daily-limit-info {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .daily-limit-warn {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .daily-limit-blocked {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  /* Modal limit overlay */
+  .modal-overlay-limit {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+
+  .modal-overlay-limit.show { 
+    display: flex; 
+    animation: fadeInLimit 0.2s ease; 
+  }
+
+  @keyframes fadeInLimit { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-content-limit {
+    background: white;
+    padding: 0;
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 460px;
+    box-shadow: var(--shadow-xl);
+    animation: slideUpLimit 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  @keyframes slideUpLimit { 
+    from { transform: translateY(20px); opacity: 0; } 
+    to { transform: translateY(0); opacity: 1; } 
+  }
+
+  .modal-header-limit {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: white;
+    padding: 24px 28px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .modal-icon-limit {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .modal-header-limit h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .modal-header-limit p {
+    margin: 2px 0 0 0;
+    opacity: 0.95;
+    font-size: 13px;
+  }
+
+  .modal-body-limit {
+    padding: 24px 28px;
+  }
+
+  .modal-body-limit p {
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin: 0 0 16px;
+    font-size: 14px;
+  }
+
+  .usage-counter {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .usage-counter span {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  .usage-counter strong {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary-navy);
+  }
+
+  .modal-footer-limit {
+    padding: 0 28px 24px;
+  }
+
+  .close-modal-limit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(15, 36, 67, 0.25);
+  }
+
+  .close-modal-limit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(15, 36, 67, 0.35);
+  }
+
+  /* --- STATS SECTION --- */
   .stats-section {
-    margin-bottom: 30px;
+    margin-bottom: 28px;
   }
 
   .main-stat-card {
-    background: white;
-    padding: 16px 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    text-align: center;
+    background: #ffffff;
+    padding: 18px 22px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    text-align: left;
     cursor: pointer;
-    max-width: 280px;
+    max-width: 300px;
     margin-bottom: 16px;
-    border: 1.5px solid #e2e8f0;
+    border: 1.5px solid var(--border-color);
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .main-stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    border-color: var(--primary-navy, #1a365d);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
   }
 
   .main-stat-title {
-    color: #64748b;
-    font-size: 11px;
+    color: var(--text-muted);
+    font-size: 11.5px;
     font-weight: 700;
     margin-bottom: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
   }
 
   .main-stat-value {
-    color: var(--primary-navy, #1a365d);
-    font-size: 24px;
-    font-weight: 700;
+    color: var(--primary-navy);
+    font-size: 26px;
+    font-weight: 800;
     line-height: 1.2;
   }
 
   .toggle-text {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-size: 11px;
-    color: #475569;
-    margin-top: 10px;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--text-muted);
     font-weight: 600;
     background: #f1f5f9;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 999px;
     transition: all 0.2s ease;
   }
 
   .main-stat-card:hover .toggle-text {
-    background: var(--primary-navy, #1a365d);
+    background: var(--primary-navy);
     color: white;
   }
 
@@ -148,224 +362,399 @@
 
   .sub-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 14px;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .sub-stats.show {
     max-height: 600px;
     opacity: 1;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .stat-card {
-    background: white;
-    padding: 14px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    transition: all 0.3s ease;
-    text-align: center;
-    border-top: 3px solid #e2e8f0;
+    background: #ffffff;
+    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    transition: all 0.25s ease;
+    text-align: left;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
   }
 
-  .stat-card.pending-card { border-top-color: #f59e0b; }
-  .stat-card.approved-card { border-top-color: #10b981; }
-  .stat-card.processing-card { border-top-color: #3b82f6; }
-  .stat-card.ready-card { border-top-color: #14b8a6; }
-  .stat-card.released-card { border-top-color: #6366f1; }
-  .stat-card.rejected-card { border-top-color: #ef4444; }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+  }
+
+  .stat-card.pending-card::before { background: #f59e0b; }
+  .stat-card.approved-card::before { background: #10b981; }
+  .stat-card.processing-card::before { background: #3b82f6; }
+  .stat-card.ready-card::before { background: #14b8a6; }
+  .stat-card.released-card::before { background: #6366f1; }
+  .stat-card.rejected-card::before { background: #ef4444; }
 
   .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow-md);
   }
 
   .stat-title {
     font-size: 11px;
-    color: #64748b;
-    font-weight: 600;
-    margin-bottom: 4px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
   }
 
   .stat-value {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     color: var(--text-dark);
+    margin: 0;
   }
 
+  /* Table Card */
   .table-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    padding: 25px;
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 24px;
+    border: 1px solid var(--border-color);
+  }
+
+  .table-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
   .table-card h3 {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-dark);
-    margin-bottom: 20px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .table-card h3 i {
+    color: var(--primary-light);
   }
 
   .table-responsive {
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
+    border: 1px solid var(--border-color);
   }
 
   table {
     width: 100%;
-    min-width: 650px;
+    min-width: 680px;
     border-collapse: collapse;
     white-space: nowrap;
+    margin: 0;
   }
 
   th {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
-    color: white;
-    padding: 14px 16px;
+    background: #f8fafc;
+    color: var(--text-muted);
+    padding: 14px 18px;
     text-align: left;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1.5px solid var(--border-color);
   }
 
   td {
-    padding: 14px 16px;
+    padding: 14px 18px;
     font-size: 14px;
     color: var(--text-dark);
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: middle;
   }
 
-  tr:hover {
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr {
+    transition: background 0.15s ease;
+  }
+
+  tbody tr:hover {
     background: #f8fafc;
   }
 
+  /* Status Badges */
   .status-badge {
-    padding: 6px 14px;
-    border-radius: 20px;
+    padding: 5px 12px;
+    border-radius: 999px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     display: inline-block;
   }
 
   .status-pending { background: #fef3c7; color: #92400e; }
+  .status-pending::before { background: #f59e0b; }
+
   .status-approved { background: #d1fae5; color: #065f46; }
+  .status-approved::before { background: #10b981; }
+
   .status-processing { background: #dbeafe; color: #1e40af; }
+  .status-processing::before { background: #3b82f6; }
+
   .status-ready { background: #ccfbf1; color: #0f766e; }
+  .status-ready::before { background: #14b8a6; }
+
   .status-released { background: #e0e7ff; color: #3730a3; }
+  .status-released::before { background: #6366f1; }
+
   .status-rejected { background: #fee2e2; color: #991b1b; }
+  .status-rejected::before { background: #ef4444; }
 
   .clickable-purpose {
-    color: var(--primary-navy);
-    font-weight: 500;
+    color: var(--primary-light);
+    font-weight: 600;
     cursor: pointer;
-    transition: color 0.2s;
-    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .clickable-purpose:hover {
-    color: var(--primary-gold);
+    color: var(--primary-navy);
     text-decoration: underline;
   }
 
   .empty-state {
     text-align: center;
-    padding: 40px 20px;
-    color: #64748b;
+    padding: 48px 20px;
+    color: var(--text-muted);
     font-size: 15px;
   }
 
+  .empty-state i {
+    font-size: 36px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+  }
+
+  /* Purpose Modal */
   .modal-overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    padding: 20px;
   }
 
   .modal-content {
     background: white;
     padding: 30px;
-    border-radius: 16px;
-    max-width: 450px;
-    width: 90%;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    border-radius: var(--radius-xl);
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--shadow-xl);
+    animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .modal-content h3 {
-    margin: 0 0 15px;
+    margin: 0 0 14px;
     color: var(--text-dark);
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 18px;
   }
 
   .modal-content p {
-    margin-bottom: 20px;
-    color: #64748b;
+    margin-bottom: 24px;
+    color: var(--text-dark);
     line-height: 1.6;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    word-break: break-word;
   }
 
   .close-modal-btn {
     background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
     border: none;
     color: white;
-    padding: 10px 24px;
-    border-radius: 10px;
+    padding: 11px 26px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    width: 100%;
   }
 
   .close-modal-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.25);
+    box-shadow: 0 4px 14px rgba(15, 36, 67, 0.25);
+  }
+
+  /* --- PAGINATION --- */
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    background: white;
+    border: 1.5px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: var(--primary-light);
+    color: var(--primary-navy);
+  }
+
+  .page-btn.active {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-light) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(15, 36, 67, 0.25);
+  }
+
+  .page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .page-ellipsis {
+    padding: 8px 6px;
+    color: var(--text-muted);
+    font-size: 13px;
   }
 </style>
 
-<div class="container">
-  <h1 class="page-title">Dashboard</h1>
-  <p class="page-subtitle">Welcome back, manage your document requests here</p>
+<div class="dashboard-container">
+  <div class="page-header-box">
+    <h1 class="page-title">Student Dashboard</h1>
+    <p class="page-subtitle">Track, monitor, and submit your official document requests.</p>
+  </div>
 
   <div class="welcome-card">
     <div class="welcome-text">
-      <h2>Hi, {{ user.first_name }} 
+      <h2>Hi, {{ user.first_name }}
         {% if user.profile.middle_initial and user.profile.middle_initial != 'N/A' %}{{ user.profile.get_middle_initial_display }}{% endif %}
         {{ user.last_name }}!
       </h2>
-      <p>Need a document? Make a request now</p>
+      <p>Need an official credential or transcript? Submit your document request below.</p>
+
+      {% if daily_limit_applies %}
+        {% if daily_limit_reached %}
+          <div class="daily-limit-banner daily-limit-blocked">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Daily Request Limit Reached — 2 / 2 submissions used today.</span>
+          </div>
+        {% elif daily_request_count == 1 %}
+          <div class="daily-limit-banner daily-limit-warn">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>You can still request <strong>1 more document</strong> today ({{ daily_request_count }} / 2 used).</span>
+          </div>
+        {% else %}
+          <div class="daily-limit-banner daily-limit-info">
+            <i class="fas fa-circle-info"></i>
+            <span>Daily quota remaining: <strong>{{ daily_request_remaining }} / 2</strong> document requests today.</span>
+          </div>
+        {% endif %}
+      {% endif %}
+
       {% if not user.profile.email_verified %}
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.95;">
+        <p style="margin-top: 10px; font-size: 13px; color: #ffd885; font-weight: 500;">
           <i class="fas fa-exclamation-triangle me-1"></i>
-          Please verify your email first to request documents!
+          Please verify your email first before submitting document requests!
         </p>
       {% endif %}
     </div>
-    <a href="{% url 'request_document' %}" class="request-btn request-document-link" data-email-verified="{{ user.profile.email_verified|yesno:'true,false' }}">
-      {% if user.profile.email_verified %}
-        <i class="fas fa-file-circle-plus me-2"></i> Request Document
-      {% else %}
-        <i class="fas fa-file-circle-plus me-2"></i> Request Document
-      {% endif %}
-    </a>
+
+    {% if daily_limit_applies and daily_limit_reached %}
+      <button type="button"
+              class="request-btn request-btn-disabled request-document-link"
+              data-email-verified="{{ user.profile.email_verified|yesno:'true,false' }}"
+              data-daily-limit="blocked"
+              id="dashboardRequestBtn"
+              style="pointer-events: auto; cursor: pointer;">
+        <i class="fas fa-file-circle-plus"></i> Request Document
+      </button>
+    {% else %}
+      <a href="{% url 'request_document' %}"
+         class="request-btn request-document-link"
+         data-email-verified="{{ user.profile.email_verified|yesno:'true,false' }}"
+         data-daily-limit="allowed">
+        {% if daily_limit_applies and daily_request_count == 1 %}
+          <i class="fas fa-file-circle-plus"></i> Request Last Document
+        {% else %}
+          <i class="fas fa-file-circle-plus"></i> Request Document
+        {% endif %}
+      </a>
+    {% endif %}
   </div>
 
   <div class="stats-section">
     <div class="main-stat-card" id="totalRequestsCard">
-      <div class="main-stat-title">Total Requests</div>
-      <div class="main-stat-value">{{ requests|length }}</div>
+      <div>
+        <div class="main-stat-title">Total Requests</div>
+        <div class="main-stat-value">{{ requests|length }}</div>
+      </div>
       <div class="toggle-text" id="toggleText">
-        <span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>
+        <span>Breakdown</span> <i class="fas fa-chevron-down"></i>
       </div>
     </div>
 
@@ -398,7 +787,10 @@
   </div>
 
   <div class="table-card">
-    <h3><i class="fas fa-file-alt me-2"></i> Your Document Requests</h3>
+    <div class="table-card-header">
+      <h3><i class="fas fa-file-lines"></i> Your Document Requests</h3>
+    </div>
+    
     <div class="table-responsive">
       <table>
         <thead>
@@ -410,12 +802,13 @@
             <th>Status Date</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="requestsTableBody">
           {% for req in requests %}
-          <tr>
-            <td>{{ req.get_document_type_display }}</td>
+          <tr class="request-row">
+            <td style="font-weight: 600;">{{ req.get_document_type_display }}</td>
             <td>
-              <span class="clickable-purpose" data-purpose="{{ req.purpose }}">
+              <span class="clickable-purpose" data-purpose="{{ req.purpose }}" title="Click to view full purpose">
+                <i class="fas fa-circle-info" style="font-size: 12px;"></i>
                 {{ req.purpose|truncatechars:40 }}
               </span>
             </td>
@@ -447,20 +840,50 @@
               {% elif req.status == 'REJECTED' and req.date_rejected %}
                 {{ req.date_rejected|date:"M d, Y H:i" }}
               {% else %}
-                —
+                <span style="color: var(--text-faint);">&mdash;</span>
               {% endif %}
             </td>
           </tr>
           {% empty %}
           <tr>
             <td colspan="5" class="empty-state">
-              <i class="fas fa-inbox fa-2x mb-2 opacity-50"></i><br>
-              No document requests yet.
+              <i class="fas fa-inbox d-block"></i>
+              No document requests submitted yet.
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+    </div>
+
+    <div class="pagination-controls" id="paginationControls"></div>
+  </div>
+</div>
+
+<!-- Daily Request Limit Modal -->
+<div class="modal-overlay-limit" id="dailyLimitModal">
+  <div class="modal-content-limit">
+    <div class="modal-header-limit">
+      <div class="modal-icon-limit">
+        <i class="fas fa-circle-exclamation"></i>
+      </div>
+      <div>
+        <h3>Daily Request Limit Reached</h3>
+        <p>Please try again tomorrow</p>
+      </div>
+    </div>
+    <div class="modal-body-limit">
+      <p>You have already reached your maximum limit of <strong>2 document requests</strong> for today.</p>
+      <div class="usage-counter">
+        <span>Daily Usage</span>
+        <strong id="limitUsageCounter">2 / 2</strong>
+      </div>
+      <p style="margin-bottom: 0;">The daily limit automatically resets at midnight (Philippine time). Please return tomorrow to submit new requests.</p>
+    </div>
+    <div class="modal-footer-limit">
+      <button class="close-modal-limit" id="closeDailyLimitModal">
+        <i class="fas fa-check me-2"></i> Got it, thanks
+      </button>
     </div>
   </div>
 </div>
@@ -468,7 +891,7 @@
 <!-- Purpose Modal -->
 <div class="modal-overlay" id="purposeModal">
   <div class="modal-content">
-    <h3><i class="fas fa-info-circle me-2"></i> Request Purpose</h3>
+    <h3><i class="fas fa-circle-info me-2 text-primary"></i> Request Purpose</h3>
     <p id="modalPurposeText"></p>
     <button class="close-modal-btn" id="closePurposeModal">Close</button>
   </div>
@@ -487,9 +910,9 @@ document.addEventListener('DOMContentLoaded', function() {
       totalRequestsCard.classList.toggle('active', isShown);
 
       if (isShown) {
-        toggleText.innerHTML = '<span>Hide Breakdown</span> <i class="fas fa-chevron-up"></i>';
+        toggleText.innerHTML = '<span>Hide</span> <i class="fas fa-chevron-up"></i>';
       } else {
-        toggleText.innerHTML = '<span>Show Breakdown</span> <i class="fas fa-chevron-down"></i>';
+        toggleText.innerHTML = '<span>Breakdown</span> <i class="fas fa-chevron-down"></i>';
       }
     });
   }
@@ -508,6 +931,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Daily Limit Modal
+  const dailyLimitModal = document.getElementById('dailyLimitModal');
+  const closeDailyLimitBtn = document.getElementById('closeDailyLimitModal');
+  if (closeDailyLimitBtn) {
+    closeDailyLimitBtn.addEventListener('click', function() {
+      dailyLimitModal.classList.remove('show');
+    });
+  }
+  if (dailyLimitModal) {
+    dailyLimitModal.addEventListener('click', function(e) {
+      if (e.target === dailyLimitModal) {
+        dailyLimitModal.classList.remove('show');
+      }
+    });
+  }
+
+  // Request Document click guard (email verified + daily limit)
+  const requestLink = document.querySelector('.request-document-link');
+  if (requestLink) {
+    requestLink.addEventListener('click', function(e) {
+      const dailyLimit = requestLink.getAttribute('data-daily-limit');
+      if (dailyLimit === 'blocked') {
+        e.preventDefault();
+        dailyLimitModal.classList.add('show');
+        return;
+      }
+    });
+  }
+
   if (closePurposeModal) {
     closePurposeModal.addEventListener('click', function() {
       purposeModal.style.display = 'none';
@@ -522,7 +974,72 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // ---------- Table Pagination ----------
+  const ROWS_PER_PAGE = 10;
+  const tableBody = document.getElementById('requestsTableBody');
+  const paginationControls = document.getElementById('paginationControls');
+  const allRows = tableBody ? Array.from(tableBody.querySelectorAll('.request-row')) : [];
+  let currentPage = 1;
+  const totalPages = Math.ceil(allRows.length / ROWS_PER_PAGE);
 
+  function renderPage(page) {
+    currentPage = page;
+
+    allRows.forEach((row, index) => {
+      const isOnPage = index >= (page - 1) * ROWS_PER_PAGE && index < page * ROWS_PER_PAGE;
+      row.style.display = isOnPage ? '' : 'none';
+    });
+
+    renderPaginationControls();
+  }
+
+  function renderPaginationControls() {
+    if (!paginationControls || totalPages <= 1) {
+      if (paginationControls) paginationControls.innerHTML = '';
+      return;
+    }
+
+    let html = '';
+
+    // Prev button
+    html += `<button class="page-btn" id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
+
+    // Page numbers (with ellipsis for many pages)
+    const pagesToShow = [];
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+        pagesToShow.push(i);
+      }
+    }
+
+    let lastPage = 0;
+    pagesToShow.forEach(p => {
+      if (p - lastPage > 1) {
+        html += `<span class="page-ellipsis">...</span>`;
+      }
+      html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}">${p}</button>`;
+      lastPage = p;
+    });
+
+    // Next button
+    html += `<button class="page-btn" id="nextPageBtn" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
+
+    paginationControls.innerHTML = html;
+
+    // Wire up events
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+    paginationControls.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => renderPage(parseInt(btn.getAttribute('data-page'), 10)));
+    });
+  }
+
+  if (allRows.length > 0) {
+    renderPage(1);
+  }
 });
 </script>
 {% endblock %}
