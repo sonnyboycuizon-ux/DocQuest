@@ -7,7 +7,28 @@ from urllib.parse import urlencode
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 
-from django.core.wsgi import get_wsgi_application
+def _bootstrap_site_packages():
+    """Try hard to find where Vercel pip-installed Django & friends live."""
+    candidates = [
+        os.path.join(os.environ.get('PYTHONUSERBASE', '/vercel/.local'),
+                     'lib', f'python{sys.version_info.major}.{sys.version_info.minor}',
+                     'site-packages'),
+        '/var/task/python_modules',
+        '/vercel/path0/venv/lib/python{}.{}/site-packages'.format(
+            sys.version_info.major, sys.version_info.minor),
+        '/vercel/path1/python_modules',
+        '/vercel/output/python_modules',
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+_bootstrap_site_packages()
+
+try:
+    from django.core.wsgi import get_wsgi_application
+except ImportError:
+    sys.stderr.write('ERROR: Django could not be imported. sys.path=' + repr(sys.path) + '\n')
+    raise
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'documate.settings')
 os.environ.setdefault('RUNNING_ON_VERCEL', 'True')

@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "pip install --break-system-packages --upgrade pip && pip install --break-system-packages -r requirements.txt",
+  "zeroConfig": false,
   "buildCommand": "python manage.py collectstatic --noinput && python manage.py migrate --noinput && (python manage.py create_superuser || true)",
   "outputDirectory": "staticfiles",
   "functions": {
