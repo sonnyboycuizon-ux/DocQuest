@@ -38,6 +38,19 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'documate.settings')
 os.environ.setdefault('RUNNING_ON_VERCEL', 'True')
 
 application = get_wsgi_application()
+app = application
+
+# Ensure database tables exist if running on Vercel with fresh SQLite in /tmp
+if not os.getenv('DATABASE_URL') and not os.getenv('POSTGRES_URL'):
+    try:
+        from django.core.management import call_command
+        from pathlib import Path
+        tmp_db = Path('/tmp/db.sqlite3')
+        if not tmp_db.exists() or tmp_db.stat().st_size < 10000:
+            call_command('migrate', interactive=False)
+            call_command('create_superuser', interactive=False)
+    except Exception as e:
+        sys.stderr.write(f'Auto-migration note: {e}\n')
 
 
 def handler(event, context):
@@ -142,11 +155,15 @@ def handler(event, context):
 
     out_headers = {}
     content_type = None
+    cookies = []
     for k, v in response_headers:
         kl = k.lower()
         if kl == 'content-type':
             content_type = v
-        out_headers[k] = v
+        if kl == 'set-cookie':
+            cookies.append(v)
+        else:
+            out_headers[k] = v
 
     if 'Content-Type' not in out_headers and content_type:
         out_headers['Content-Type'] = content_type
@@ -159,16 +176,18 @@ def handler(event, context):
                        'application/xml', 'application/xhtml', 'image/svg'))
     )
 
-    if is_binary:
-        return {
-            'statusCode': status_code,
-            'headers': out_headers,
-            'body': base64.b64encode(body).decode('ascii'),
-            'encoding': 'base64',
-        }
-
-    return {
+    payload = {
         'statusCode': status_code,
         'headers': out_headers,
-        'body': body.decode('utf-8', errors='replace'),
     }
+    if cookies:
+        payload['cookies'] = cookies
+        payload['multiValueHeaders'] = {'Set-Cookie': cookies}
+
+    if is_binary:
+        payload['body'] = base64.b64encode(body).decode('ascii')
+        payload['encoding'] = 'base64'
+    else:
+        payload['body'] = body.decode('utf-8', errors='replace')
+
+    return payload

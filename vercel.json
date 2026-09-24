@@ -1,11 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "python manage.py collectstatic --noinput && python manage.py migrate --noinput && (python manage.py create_superuser || true)",
+  "buildCommand": "python3 manage.py collectstatic --noinput && (python3 manage.py migrate --noinput || true) && (python3 manage.py create_superuser || true)",
   "outputDirectory": "staticfiles",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{requestsystem,documate,static,media}/**/*.{py,html,css,js,jpg,jpeg,png,gif,webp,svg,woff,woff2,ttf,eot,json,yaml,yml,txt}",
+      "includeFiles": "{requestsystem,documate,static,staticfiles,media}/**/*.{py,html,css,js,jpg,jpeg,png,gif,webp,svg,woff,woff2,ttf,eot,json,yaml,yml,txt,sqlite3},db.sqlite3",
       "excludeFiles": "**/__pycache__/**,**/*.pyc,**/*.pyo",
       "maxDuration": 30
     }

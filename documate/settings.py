@@ -30,7 +30,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-#7hjfi#as8m1sgdp2l=l*1v%^x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.50.46', '192.168.50.132', '192.168.50.54']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.vercel.app',
+    '192.168.50.46',
+    '192.168.50.132',
+    '192.168.50.54',
+]
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -41,12 +48,14 @@ if VERCEL_URL:
     VERCEL_URL = VERCEL_URL.replace('https://', '').replace('http://', '').rstrip('/')
     ALLOWED_HOSTS.append(VERCEL_URL)
     ALLOWED_HOSTS.append(f'*.{VERCEL_URL}')
-    ALLOWED_HOSTS.append('*.vercel.app')
 
-if os.getenv('ALLOW_ALL_HOSTS', 'False') == 'True':
-    ALLOWED_HOSTS = ['*']
+if os.getenv('ALLOW_ALL_HOSTS', 'False') == 'True' or os.getenv('VERCEL') == '1':
+    ALLOWED_HOSTS.append('*')
 
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'http://*.vercel.app',
+]
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
     CSRF_TRUSTED_ORIGINS.append(f'http://{RENDER_EXTERNAL_HOSTNAME}')
@@ -54,7 +63,6 @@ if RENDER_EXTERNAL_HOSTNAME:
 if VERCEL_URL:
     CSRF_TRUSTED_ORIGINS.append(f'https://{VERCEL_URL}')
     CSRF_TRUSTED_ORIGINS.append(f'http://{VERCEL_URL}')
-    CSRF_TRUSTED_ORIGINS.append('https://*.vercel.app')
 
 EXTRA_CSRF_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 if EXTRA_CSRF_ORIGINS:
@@ -71,7 +79,11 @@ if os.getenv('ALLOW_ALL_HOSTS', 'False') == 'True':
     ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-RUNNING_ON_VERCEL = os.getenv('RUNNING_ON_VERCEL', 'False') == 'True'
+RUNNING_ON_VERCEL = (
+    os.getenv('RUNNING_ON_VERCEL', 'False') == 'True'
+    or os.getenv('VERCEL') == '1'
+    or bool(os.getenv('VERCEL_URL'))
+)
 
 
 # Application definition
@@ -128,6 +140,28 @@ DATABASES = {
     }
 }
 
+DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL')
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+elif RUNNING_ON_VERCEL:
+    import shutil
+    tmp_db = Path('/tmp/db.sqlite3')
+    bundled_db = BASE_DIR / 'db.sqlite3'
+    if not tmp_db.exists() and bundled_db.exists():
+        try:
+            shutil.copy2(bundled_db, tmp_db)
+        except Exception:
+            pass
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': tmp_db,
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -171,10 +205,22 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if RUNNING_ON_VERCEL:
+    MEDIA_ROOT = Path('/tmp/media')
+    if not MEDIA_ROOT.exists():
+        import shutil
+        bundled_media = BASE_DIR / 'media'
+        if bundled_media.exists():
+            try:
+                shutil.copytree(bundled_media, MEDIA_ROOT, dirs_exist_ok=True)
+            except Exception:
+                pass
+        MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 _EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 _EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
