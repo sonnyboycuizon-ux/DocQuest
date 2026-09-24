@@ -9,18 +9,22 @@ sys.path.insert(0, BASE_DIR)
 
 def _bootstrap_site_packages():
     """Try hard to find where Vercel pip-installed Django & friends live."""
+    py_ver = f'{sys.version_info.major}.{sys.version_info.minor}'
     candidates = [
         os.path.join(os.environ.get('PYTHONUSERBASE', '/vercel/.local'),
-                     'lib', f'python{sys.version_info.major}.{sys.version_info.minor}',
-                     'site-packages'),
+                     'lib', f'python{py_ver}', 'site-packages'),
         '/var/task/python_modules',
-        '/vercel/path0/venv/lib/python{}.{}/site-packages'.format(
-            sys.version_info.major, sys.version_info.minor),
+        f'/vercel/path0/venv/lib/python{py_ver}/site-packages',
+        f'/vercel/path0/.venv/lib/python{py_ver}/site-packages',
         '/vercel/path1/python_modules',
         '/vercel/output/python_modules',
+        f'/vercel/cache/.venv/lib/python{py_ver}/site-packages',
+        f'/tmp/.venv/lib/python{py_ver}/site-packages',
+        os.path.join(os.environ.get('VIRTUAL_ENV', ''), 'lib',
+                     f'python{py_ver}', 'site-packages'),
     ]
     for p in candidates:
-        if os.path.isdir(p) and p not in sys.path:
+        if p and os.path.isdir(p) and p not in sys.path:
             sys.path.insert(0, p)
 _bootstrap_site_packages()
 

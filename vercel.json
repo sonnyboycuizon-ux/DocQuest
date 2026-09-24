@@ -5,7 +5,8 @@
   "outputDirectory": "staticfiles",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{requestsystem,documate,static,templates,media}/**/*.{py,html,css,js,jpg,jpeg,png,gif,webp,svg,woff,woff2,ttf,eot,json,yaml,yml,txt}",
+      "runtime": "python@3.12",
+      "includeFiles": "{requestsystem,documate,static,media}/**/*.{py,html,css,js,jpg,jpeg,png,gif,webp,svg,woff,woff2,ttf,eot,json,yaml,yml,txt}",
       "excludeFiles": "**/__pycache__/**,**/*.pyc,**/*.pyo",
       "maxDuration": 30
     }
@@ -13,7 +14,7 @@
   "rewrites": [
     {
       "source": "/static/(.*)",
-      "destination": "/static/$1"
+      "destination": "/$1"
     },
     {
       "source": "/(.*)",
